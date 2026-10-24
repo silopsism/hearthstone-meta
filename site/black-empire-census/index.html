@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="utf-8">
+<title>Black Empire Card Census</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a deck-tracker sideboard — a dark void page, tier rows of card banners up top,
+   then per-class panels laid out like HSGuru deck columns, a slope chart, and the bench. */
+:root {
+  --void: #120d17;
+  --panel: #1b1423;
+  --panel-2: #231a2d;
+  --rule: #33283f;
+  --ink: #f0e7d8;
+  --mute: #a99bb5;
+  --faint: #6f6280;
+  --legendary: #f1a93c;
+  --epic: #b875f2;
+  --mana: #2f6fd6;
+  --core: #7bd88f;
+  --flex: #e9c46a;
+  --trap: #f06b5c;
+  --fringe: #9a8cae;
+  --f-display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --f-body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --f-data: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--void);
+  color: var(--ink);
+  font: 400 16px/1.5 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 56px; }
+h1, h2 { font-family: var(--f-display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: .02em; }
+h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.05; }
+h2 { font-size: clamp(1.3rem, 2.6vw, 1.75rem); }
+p { margin: 0; }
+.eyebrow { font: 700 .78rem/1.2 var(--f-body); text-transform: uppercase; letter-spacing: .14em; color: var(--legendary); }
+.lede { color: var(--mute); font-size: 1.12rem; max-width: 62ch; }
+.num { font-family: var(--f-data); font-variant-numeric: tabular-nums; }
+section { display: grid; gap: 20px; }
+.sec-head { display: grid; gap: 6px; }
+.sec-head p { color: var(--mute); max-width: 68ch; }
+
+/* hero */
+.hero { display: grid; gap: 18px; }
+.stats { display: flex; flex-wrap: wrap; gap: 12px 40px; margin-top: 8px; }
+.stat { display: grid; gap: 2px; }
+.stat b { font: 600 2rem/1 var(--f-data); font-variant-numeric: tabular-nums; }
+.stat b small { font-size: .55em; color: var(--mute); font-weight: 400; }
+.stat span { color: var(--mute); font-size: .9rem; }
+
+/* card banner, drawn like a deck-tracker row */
+.tile {
+  position: relative; display: flex; align-items: center; gap: 8px;
+  height: 34px; min-width: 0; border-radius: 3px; overflow: hidden;
+  background: #1a1220;
+  box-shadow: inset 3px 0 0 var(--rar);
+  padding-left: 3px;
+}
+/* tile art is 256x59 with a blank left third; fade it in past that */
+.tile::before {
+  content: ""; position: absolute; inset: 0 0 0 auto; width: 148px;
+  background: var(--art) right center / auto 100% no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent 32%, #000 70%);
+  mask-image: linear-gradient(90deg, transparent 32%, #000 70%);
+}
+.tile > * { position: relative; }
+.tile .cost {
+  flex: none; width: 26px; height: 26px; margin-left: 4px; display: grid; place-items: center;
+  font: 600 .85rem/1 var(--f-data); color: #fff;
+  background: radial-gradient(circle at 35% 30%, #6aa6ff, var(--mana) 60%, #173c80);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+.tile .name {
+  flex: 1; min-width: 0; font: 700 .92rem/1 var(--f-body); color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-shadow: 0 1px 2px #000, 0 0 6px #000;
+}
+.tile .star { flex: none; width: 22px; text-align: center; color: var(--legendary); font-size: .8rem; text-shadow: 0 0 4px #000; }
+.tile.bench { filter: grayscale(1) brightness(.62); }
+
+/* tier list */
+.tiers { display: grid; gap: 14px; }
+.tier { display: grid; grid-template-columns: 112px 1fr; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: var(--panel); }
+.tier-label { display: grid; align-content: center; gap: 4px; padding: 14px; border-right: 1px solid var(--rule); }
+.tier-label strong { font: 700 1.25rem/1 var(--f-display); letter-spacing: .06em; }
+.tier-label span { font-size: .8rem; color: var(--mute); line-height: 1.3; }
+.tier[data-t="core"] .tier-label { box-shadow: inset 4px 0 0 var(--core); } .tier[data-t="core"] strong { color: var(--core); }
+.tier[data-t="flex"] .tier-label { box-shadow: inset 4px 0 0 var(--flex); } .tier[data-t="flex"] strong { color: var(--flex); }
+.tier[data-t="trap"] .tier-label { box-shadow: inset 4px 0 0 var(--trap); } .tier[data-t="trap"] strong { color: var(--trap); }
+.tier[data-t="fringe"] .tier-label { box-shadow: inset 4px 0 0 var(--fringe); } .tier[data-t="fringe"] strong { color: var(--fringe); }
+.tier-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px 18px; padding: 14px; }
+.tcard { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.tcard .meta { display: flex; gap: 12px; font-size: .8rem; color: var(--mute); }
+.tcard .meta b { color: var(--ink); font-family: var(--f-data); font-weight: 600; }
+.tcard p { font-size: .9rem; color: var(--mute); line-height: 1.4; }
+
+/* class board */
+.board { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 18px; align-items: start; }
+.cls { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; min-width: 0; }
+.cls-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 8px 12px; background: var(--cc); color: var(--cc-ink); font: 700 .95rem/1.2 var(--f-display); letter-spacing: .04em; }
+.cls-head span { font: 500 .8rem/1 var(--f-body); opacity: .85; letter-spacing: 0; }
+.arch { padding: 12px; display: grid; gap: 8px; border-top: 1px solid var(--rule); }
+.arch:first-of-type { border-top: 0; }
+.arch-top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.arch-top h3 { margin: 0; font: 700 1rem/1.2 var(--f-body); }
+.arch-wr { display: flex; gap: 10px; font: 400 .78rem/1.2 var(--f-data); color: var(--mute); font-variant-numeric: tabular-nums; }
+.arch-wr b { color: var(--ink); font-weight: 600; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) 92px 56px; gap: 8px; align-items: center; }
+.bars { display: grid; gap: 3px; }
+.bar { position: relative; height: 7px; background: var(--panel-2); border-radius: 2px; overflow: hidden; }
+.bar i { position: absolute; inset: 0 auto 0 0; border-radius: 2px; }
+.bar.d4 i { background: var(--mute); }
+.bar.t5k i { background: var(--legendary); }
+.bar.na { background: repeating-linear-gradient(90deg, var(--panel-2) 0 3px, transparent 3px 6px); }
+.chip { justify-self: end; font: 700 .66rem/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; padding: 4px 6px; border-radius: 3px; border: 1px solid currentColor; }
+.chip.core { color: var(--core); } .chip.flex { color: var(--flex); } .chip.fringe { color: var(--fringe); } .chip.trap { color: var(--trap); }
+.none { font-size: .86rem; color: var(--faint); font-style: italic; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: .85rem; color: var(--mute); align-items: center; }
+.legend .sw { display: inline-block; width: 22px; height: 7px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+
+/* slope chart + trap */
+.split { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.panel h3 { margin: 0; font: 700 1.05rem/1.25 var(--f-body); }
+.panel p { color: var(--mute); font-size: .92rem; }
+.chart { overflow-x: auto; }
+.chart svg { display: block; width: 100%; min-width: 440px; height: auto; }
+.duel { display: grid; gap: 10px; }
+.duel-row { display: grid; grid-template-columns: 70px 1fr; gap: 10px; align-items: center; font-size: .82rem; color: var(--mute); }
+.duel-bars { display: grid; gap: 4px; }
+.dbar { display: flex; align-items: center; gap: 8px; font: 600 .8rem/1 var(--f-data); }
+.dbar i { display: block; height: 14px; border-radius: 2px; }
+
+/* bench */
+.bench-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 14px; }
+.bench-cls { display: grid; gap: 6px; align-content: start; }
+.bench-cls h4 { margin: 4px 0 0; font: 700 .72rem/1 var(--f-body); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); }
+
+.method { color: var(--mute); font-size: .9rem; display: grid; gap: 8px; max-width: 78ch; border-top: 1px solid var(--rule); padding-top: 20px; }
+.method strong { color: var(--ink); }
+
+@media (max-width: 760px) {
+  .split { grid-template-columns: 1fr; }
+  .tier { grid-template-columns: 1fr; }
+  .tier-label { border-right: 0; border-bottom: 1px solid var(--rule); grid-auto-flow: column; justify-content: start; align-items: baseline; gap: 12px; }
+  .board { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bar i, .dbar i { transition: width .6s ease; }
+}
+</style>
+
+<style>body{margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <p class="eyebrow">Reign of the Black Empire · Standard · post-ban · 24 Oct 2026</p>
+    <h1>Black Empire Card Census</h1>
+    <p class="lede">Which of the set's 27 epics and 27 legendaries the winning ladder decks actually run, read from HSGuru's best-performing lists at Diamond 4-1 and Top 5k legend.</p>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">The verdict</p>
+      <h2>Tier list</h2>
+      <p>Lists are weighted by games played × win rate above 50%, so a 6,000-game list at 63% counts for far more than a 100-game list at 58%. List counts are Diamond 4-1 / Top 5k.</p>
+    </div>
+    <div class="tiers" id="tiers"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">By archetype</p>
+      <h2>Where each card is played</h2>
+      <p>Each bar is the card's weighted share of that archetype's lists. A hatched bar means the archetype had no qualifying lists at that level.</p>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--mute)"></i>Diamond 4-1</span>
+      <span><i class="sw" style="background:var(--legendary)"></i>Top 5k legend</span>
+      <span>Win rates are game-weighted averages of the archetype's lists.</span>
+    </div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Moving up the ladder</p>
+      <h2>What holds up against better players</h2>
+    </div>
+    <div class="split">
+      <div class="panel">
+        <h3>Archetype win rate, Diamond 4-1 → Top 5k</h3>
+        <p>Every deck loses ground at the higher level. Aggro Warlock stays on top; C'Thun DH, the most-played deck, drops furthest.</p>
+        <div class="chart" id="slope"></div>
+      </div>
+      <div class="panel">
+        <h3>The N'Zoth trap</h3>
+        <p>N'Zoth, Dream's End is the card that turns Handbuff DK into N'Zoth Handbuff DK. The version without it, and with no Black Empire epics or legendaries at all, wins more at both levels.</p>
+        <div class="duel" id="duel"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">On the bench</p>
+      <h2>Not in a single list</h2>
+      <p id="bench-lede"></p>
+    </div>
+    <div class="bench-grid" id="bench"></div>
+  </section>
+
+  <footer class="method">
+    <p><strong>Source.</strong> HSGuru deck and archetype stats for Standard with post-ban filters, minimum 100 games per list, read from screenshots on 24 Oct 2026: <span id="m-d4"></span> at Diamond 4-1 and <span id="m-t5k"></span> at Top 5k legend. Card art from HearthstoneJSON.</p>
+    <p><strong>Method.</strong> Each list is weighted by games × (win rate − 50). A card is core where it carries at least 80% of an archetype's weight, flex at 30–80%, and fringe below that or in only one or two lists.</p>
+    <p><strong>Limits.</strong> The set is four days old and these are HSGuru's top-performing lists, not every deck played. Card names were read by eye from screenshots. One Top 5k Void C'Thun DH list was left out because its win rate was cut off.</p>
+  </footer>
+</div>
+
+<script>
+const DATA = {"levels": {"d4": {"lists": 99, "games": 95319, "archetypes": {"Zoolock": {"cls": "Warlock", "lists": 13, "games": 22937, "wr": 63.0, "best": 67.6, "cards": {"Zakajz the Corruptor": {"n": 10, "share": 0.96, "delta": 0.8}, "Kith'ix": {"n": 6, "share": 0.36, "delta": -0.9}, "Floating Lessons": {"n": 13, "share": 1.0, "delta": null}, "C'Thun, Eye of the Empire": {"n": 2, "share": 0.25, "delta": -2.3}}}, "Zee C'Thun Shaman": {"cls": "Shaman", "lists": 8, "games": 6850, "wr": 61.1, "best": 66.7, "cards": {"C'Thun, Eye of the Empire": {"n": 8, "share": 1.0, "delta": null}, "Neptulon, Lord of Tides": {"n": 1, "share": 0.03, "delta": 4.4}}}, "Shredslock": {"cls": "Warlock", "lists": 15, "games": 11450, "wr": 62.8, "best": 65.8, "cards": {"Zakajz the Corruptor": {"n": 8, "share": 0.85, "delta": 2.0}, "Kith'ix": {"n": 4, "share": 0.05, "delta": -0.2}, "Floating Lessons": {"n": 14, "share": 0.99, "delta": 0.4}, "C'Thun, Eye of the Empire": {"n": 1, "share": 0.02, "delta": -6.5}}}, "C'Thun DH": {"cls": "Demon Hunter", "lists": 15, "games": 22997, "wr": 59.4, "best": 64.9, "cards": {"C'Thun, Eye of the Empire": {"n": 15, "share": 1.0, "delta": null}, "Tentacle Lash": {"n": 15, "share": 1.0, "delta": null}, "Frontline Ironborn": {"n": 9, "share": 0.3, "delta": -0.8}}}, "Void C'Thun DH": {"cls": "Demon Hunter", "lists": 7, "games": 5424, "wr": 55.9, "best": 61.9, "cards": {"C'Thun, Eye of the Empire": {"n": 7, "share": 1.0, "delta": null}, "Tentacle Lash": {"n": 7, "share": 1.0, "delta": null}}}, "BFU Handbuff DK": {"cls": "Death Knight", "lists": 3, "games": 2696, "wr": 60.1, "best": 61.7, "cards": {}}, "C'Thun Warlock": {"cls": "Warlock", "lists": 6, "games": 9845, "wr": 57.4, "best": 60.6, "cards": {"C'Thun, Eye of the Empire": {"n": 6, "share": 1.0, "delta": null}, "Kith'ix": {"n": 5, "share": 0.96, "delta": 1.2}, "M.O.T.H.E.R.": {"n": 1, "share": 0.0, "delta": -5.0}}}, "BFU N'Zoth Handbuff DK": {"cls": "Death Knight", "lists": 8, "games": 6279, "wr": 56.9, "best": 60.2, "cards": {"N'Zoth, Dream's End": {"n": 8, "share": 1.0, "delta": null}}}, "Pure Paladin": {"cls": "Paladin", "lists": 4, "games": 851, "wr": 55.3, "best": 58.4, "cards": {"Rajh": {"n": 3, "share": 0.72, "delta": -3.8}, "Oathbinder's Aura": {"n": 1, "share": 0.41, "delta": -0.3}, "Amitut, Keeper of Amitus": {"n": 3, "share": 0.72, "delta": -3.8}, "Halls of Origination": {"n": 3, "share": 0.72, "delta": -3.8}}}, "Unholy DK": {"cls": "Death Knight", "lists": 3, "games": 439, "wr": 56.5, "best": 58.1, "cards": {}}, "C'Thun Druid": {"cls": "Druid", "lists": 1, "games": 137, "wr": 57.7, "best": 57.7, "cards": {"C'Thun, Eye of the Empire": {"n": 1, "share": 1.0, "delta": null}}}, "Egg Warrior": {"cls": "Warrior", "lists": 1, "games": 158, "wr": 57.6, "best": 57.6, "cards": {"Archaedas": {"n": 1, "share": 1.0, "delta": null}, "N'Zoth, Dream's End": {"n": 1, "share": 1.0, "delta": null}}}, "Harold C'Thun Warlock": {"cls": "Warlock", "lists": 3, "games": 1514, "wr": 56.7, "best": 57.5, "cards": {"C'Thun, Eye of the Empire": {"n": 3, "share": 1.0, "delta": null}, "Kith'ix": {"n": 3, "share": 1.0, "delta": null}, "Ritual of Excess": {"n": 3, "share": 1.0, "delta": null}}}, "XL Rafaamlock": {"cls": "Warlock", "lists": 1, "games": 134, "wr": 57.5, "best": 57.5, "cards": {"C'Thun, Eye of the Empire": {"n": 1, "share": 1.0, "delta": null}, "Kith'ix": {"n": 1, "share": 1.0, "delta": null}}}, "Egg Priest": {"cls": "Priest", "lists": 2, "games": 604, "wr": 56.1, "best": 56.4, "cards": {}}, "AYAYA Rogue": {"cls": "Rogue", "lists": 3, "games": 548, "wr": 54.0, "best": 55.8, "cards": {"Mastermind Yogg-Saron": {"n": 3, "share": 1.0, "delta": null}}}, "Holy Paladin": {"cls": "Paladin", "lists": 1, "games": 138, "wr": 55.1, "best": 55.1, "cards": {"Mastermind Yogg-Saron": {"n": 1, "share": 1.0, "delta": null}, "Oathbinder's Aura": {"n": 1, "share": 1.0, "delta": null}, "Amitut, Keeper of Amitus": {"n": 1, "share": 1.0, "delta": null}, "Halls of Origination": {"n": 1, "share": 1.0, "delta": null}}}, "Dragon Warrior": {"cls": "Warrior", "lists": 2, "games": 572, "wr": 53.7, "best": 54.4, "cards": {}}, "Demon Warlock": {"cls": "Warlock", "lists": 1, "games": 196, "wr": 54.1, "best": 54.1, "cards": {"C'Thun, Eye of the Empire": {"n": 1, "share": 1.0, "delta": null}, "Kith'ix": {"n": 1, "share": 1.0, "delta": null}, "M.O.T.H.E.R.": {"n": 1, "share": 1.0, "delta": null}, "Ritual of Excess": {"n": 1, "share": 1.0, "delta": null}}}, "Thief Priest": {"cls": "Priest", "lists": 1, "games": 1305, "wr": 53.3, "best": 53.3, "cards": {}}, "Pirate Warrior": {"cls": "Warrior", "lists": 1, "games": 245, "wr": 53.1, "best": 53.1, "cards": {}}}, "cardLists": {"Floating Lessons": 27, "Zakajz the Corruptor": 18, "Kith'ix": 20, "C'Thun, Eye of the Empire": 45, "Neptulon, Lord of Tides": 1, "Tentacle Lash": 22, "Frontline Ironborn": 9, "N'Zoth, Dream's End": 9, "Archaedas": 1, "Ritual of Excess": 4, "Mastermind Yogg-Saron": 4, "Rajh": 3, "Amitut, Keeper of Amitus": 4, "Halls of Origination": 4, "Oathbinder's Aura": 2, "M.O.T.H.E.R.": 2}}, "t5k": {"lists": 48, "games": 31473, "archetypes": {"Zoolock": {"cls": "Warlock", "lists": 6, "games": 8248, "wr": 57.8, "best": 61.0, "cards": {"Zakajz the Corruptor": {"n": 6, "share": 1.0, "delta": null}, "Kith'ix": {"n": 2, "share": 0.5, "delta": 3.6}, "Floating Lessons": {"n": 6, "share": 1.0, "delta": null}, "C'Thun, Eye of the Empire": {"n": 1, "share": 0.15, "delta": 0.5}}}, "C'Thun Warlock": {"cls": "Warlock", "lists": 3, "games": 1622, "wr": 55.7, "best": 60.3, "cards": {"C'Thun, Eye of the Empire": {"n": 3, "share": 1.0, "delta": null}, "Kith'ix": {"n": 3, "share": 1.0, "delta": null}, "M.O.T.H.E.R.": {"n": 1, "share": 0.15, "delta": 3.1}, "Ritual of Excess": {"n": 1, "share": 0.2, "delta": 5.2}}}, "BFU Handbuff DK": {"cls": "Death Knight", "lists": 4, "games": 2366, "wr": 56.9, "best": 59.7, "cards": {}}, "Shredslock": {"cls": "Warlock", "lists": 8, "games": 4661, "wr": 56.9, "best": 59.0, "cards": {"Zakajz the Corruptor": {"n": 5, "share": 0.85, "delta": 1.1}, "Kith'ix": {"n": 2, "share": 0.07, "delta": -0.2}, "Floating Lessons": {"n": 8, "share": 1.0, "delta": null}}}, "BFU N'Zoth Handbuff DK": {"cls": "Death Knight", "lists": 6, "games": 1971, "wr": 53.1, "best": 58.6, "cards": {"N'Zoth, Dream's End": {"n": 6, "share": 1.0, "delta": null}}}, "C'Thun DH": {"cls": "Demon Hunter", "lists": 8, "games": 5221, "wr": 54.4, "best": 57.4, "cards": {"Frontline Ironborn": {"n": 3, "share": 0.4, "delta": 1.1}, "Tentacle Lash": {"n": 8, "share": 1.0, "delta": null}, "C'Thun, Eye of the Empire": {"n": 8, "share": 1.0, "delta": null}}}, "Zee C'Thun Shaman": {"cls": "Shaman", "lists": 2, "games": 3392, "wr": 57.1, "best": 57.3, "cards": {"C'Thun, Eye of the Empire": {"n": 2, "share": 1.0, "delta": null}}}, "Pure Paladin": {"cls": "Paladin", "lists": 1, "games": 201, "wr": 55.2, "best": 55.2, "cards": {"Rajh": {"n": 1, "share": 1.0, "delta": null}, "Oathbinder's Aura": {"n": 1, "share": 1.0, "delta": null}, "Amitut, Keeper of Amitus": {"n": 1, "share": 1.0, "delta": null}, "Halls of Origination": {"n": 1, "share": 1.0, "delta": null}}}, "Summoner Mage": {"cls": "Mage", "lists": 1, "games": 153, "wr": 54.9, "best": 54.9, "cards": {"Thaw From Ice": {"n": 1, "share": 1.0, "delta": null}, "Isiset": {"n": 1, "share": 1.0, "delta": null}, "Discs of Norgannon": {"n": 1, "share": 1.0, "delta": null}}}, "Harold C'Thun Warlock": {"cls": "Warlock", "lists": 1, "games": 477, "wr": 54.3, "best": 54.3, "cards": {"C'Thun, Eye of the Empire": {"n": 1, "share": 1.0, "delta": null}, "Kith'ix": {"n": 1, "share": 1.0, "delta": null}, "Ritual of Excess": {"n": 1, "share": 1.0, "delta": null}}}, "Thief Priest": {"cls": "Priest", "lists": 3, "games": 535, "wr": 51.4, "best": 53.4, "cards": {"C'Thun, Eye of the Empire": {"n": 1, "share": 0.33, "delta": 0.7}, "Dark Deacon": {"n": 1, "share": 0.33, "delta": 0.7}}}, "Egg Priest": {"cls": "Priest", "lists": 1, "games": 287, "wr": 53.3, "best": 53.3, "cards": {}}, "XL Rafaamlock": {"cls": "Warlock", "lists": 1, "games": 111, "wr": 53.2, "best": 53.2, "cards": {"C'Thun, Eye of the Empire": {"n": 1, "share": 1.0, "delta": null}, "Kith'ix": {"n": 1, "share": 1.0, "delta": null}, "Ritual of Excess": {"n": 1, "share": 1.0, "delta": null}}}, "Mug Shaman": {"cls": "Shaman", "lists": 1, "games": 423, "wr": 52.0, "best": 52.0, "cards": {"Unnatural Cold": {"n": 1, "share": 1.0, "delta": null}}}, "Void C'Thun DH": {"cls": "Demon Hunter", "lists": 2, "games": 1805, "wr": 51.2, "best": 51.3, "cards": {"C'Thun, Eye of the Empire": {"n": 2, "share": 1.0, "delta": null}, "Tentacle Lash": {"n": 2, "share": 1.0, "delta": null}}}}, "cardLists": {"Floating Lessons": 14, "Zakajz the Corruptor": 11, "Kith'ix": 9, "Ritual of Excess": 3, "C'Thun, Eye of the Empire": 19, "N'Zoth, Dream's End": 6, "M.O.T.H.E.R.": 1, "Frontline Ironborn": 3, "Tentacle Lash": 10, "Oathbinder's Aura": 1, "Rajh": 1, "Amitut, Keeper of Amitus": 1, "Halls of Origination": 1, "Discs of Norgannon": 1, "Thaw From Ice": 1, "Isiset": 1, "Unnatural Cold": 1, "Dark Deacon": 1}}}, "cards": {"Rajh": {"id": "BE_004", "rarity": "LEGENDARY", "cls": "PALADIN", "cost": 5}, "Ritual of Excess": {"id": "BE_005", "rarity": "EPIC", "cls": "WARLOCK", "cost": 3}, "Mogu Warmaster": {"id": "BE_008", "rarity": "EPIC", "cls": "NEUTRAL", "cost": 3}, "Mastermind Yogg-Saron": {"id": "BE_009", "rarity": "LEGENDARY", "cls": "NEUTRAL", "cost": 9}, "Dark Deacon": {"id": "BE_012", "rarity": "EPIC", "cls": "PRIEST", "cost": 3}, "C'Thun, Eye of the Empire": {"id": "BE_013", "rarity": "LEGENDARY", "cls": "NEUTRAL", "cost": 10}, "N'Zoth, Dream's End": {"id": "BE_017", "rarity": "LEGENDARY", "cls": "NEUTRAL", "cost": 15}, "M.O.T.H.E.R.": {"id": "BE_036", "rarity": "LEGENDARY", "cls": "NEUTRAL", "cost": 9}, "Anvil of Reshaping": {"id": "BE_042", "rarity": "EPIC", "cls": "WARRIOR", "cost": 2}, "Mismatcher": {"id": "BE_045", "rarity": "EPIC", "cls": "PRIEST", "cost": 5}, "Archaedas": {"id": "BE_055", "rarity": "LEGENDARY", "cls": "WARRIOR", "cost": 4}, "Kith'ix": {"id": "BE_090", "rarity": "LEGENDARY", "cls": "WARLOCK", "cost": 6}, "Floating Lessons": {"id": "BE_094", "rarity": "EPIC", "cls": "WARLOCK", "cost": 1}, "Amitut, Keeper of Amitus": {"id": "BE_143", "rarity": "LEGENDARY", "cls": "PALADIN", "cost": 7}, "Oathbinder's Aura": {"id": "BE_146", "rarity": "EPIC", "cls": "PALADIN", "cost": 3}, "Primus of Power": {"id": "BE_171", "rarity": "EPIC", "cls": "SHAMAN", "cost": 4}, "Halls of Origination": {"id": "BE_183", "rarity": "EPIC", "cls": "PALADIN", "cost": 8}, "Neptulon, Lord of Tides": {"id": "BE_209", "rarity": "LEGENDARY", "cls": "SHAMAN", "cost": 7}, "Blade of The Black Empire": {"id": "BE_227", "rarity": "LEGENDARY", "cls": "PRIEST", "cost": 3}, "Ravitz": {"id": "BE_230", "rarity": "LEGENDARY", "cls": "DEMONHUNTER", "cost": 4}, "Discs of Norgannon": {"id": "BE_250", "rarity": "LEGENDARY", "cls": "MAGE", "cost": 2}, "Thaw From Ice": {"id": "BE_257", "rarity": "EPIC", "cls": "MAGE", "cost": 2}, "Isiset": {"id": "BE_259", "rarity": "LEGENDARY", "cls": "MAGE", "cost": 6}, "Encircle": {"id": "BE_265", "rarity": "EPIC", "cls": "DEMONHUNTER", "cost": 6}, "Icebelt Magi": {"id": "BE_270", "rarity": "EPIC", "cls": "MAGE", "cost": 5}, "Bloodfiend": {"id": "BE_283", "rarity": "EPIC", "cls": "DEATHKNIGHT", "cost": 4}, "G'huun": {"id": "BE_287", "rarity": "LEGENDARY", "cls": "DEATHKNIGHT", "cost": 8}, "Tome Translator": {"id": "BE_327", "rarity": "EPIC", "cls": "NEUTRAL", "cost": 4}, "Therazane the Earthmother": {"id": "BE_337", "rarity": "LEGENDARY", "cls": "SHAMAN", "cost": 6}, "Reload": {"id": "BE_555", "rarity": "EPIC", "cls": "HUNTER", "cost": 8}, "Setesh": {"id": "BE_557", "rarity": "LEGENDARY", "cls": "WARRIOR", "cost": 7}, "Broodqueen Sha'kar": {"id": "BE_565", "rarity": "LEGENDARY", "cls": "DEMONHUNTER", "cost": 5}, "Mimiron": {"id": "BE_588", "rarity": "LEGENDARY", "cls": "HUNTER", "cost": 1}, "Animator of Iron": {"id": "BE_600", "rarity": "EPIC", "cls": "WARRIOR", "cost": 3}, "Shadowcrafter": {"id": "BE_702", "rarity": "EPIC", "cls": "ROGUE", "cost": 2}, "Drest'agath": {"id": "BE_703", "rarity": "LEGENDARY", "cls": "ROGUE", "cost": 4}, "Wandering Seeker": {"id": "BE_723", "rarity": "EPIC", "cls": "ROGUE", "cost": 4}, "The Unknowable One": {"id": "BE_725", "rarity": "LEGENDARY", "cls": "ROGUE", "cost": 5}, "Zakajz the Corruptor": {"id": "BE_728", "rarity": "LEGENDARY", "cls": "WARLOCK", "cost": 4}, "Primal Rockfang": {"id": "BE_731", "rarity": "EPIC", "cls": "HUNTER", "cost": 3}, "Kronn the Impaler": {"id": "BE_732", "rarity": "LEGENDARY", "cls": "HUNTER", "cost": 10}, "Tentacle Lash": {"id": "BE_771", "rarity": "EPIC", "cls": "DEMONHUNTER", "cost": 5}, "Uldir Quarantine": {"id": "BE_780", "rarity": "EPIC", "cls": "DEATHKNIGHT", "cost": 3}, "Fetid Devourer": {"id": "BE_781", "rarity": "LEGENDARY", "cls": "DEATHKNIGHT", "cost": 7}, "Y'Shaarj, Titan Bane": {"id": "BE_784", "rarity": "LEGENDARY", "cls": "NEUTRAL", "cost": 10}, "Zer'Ontu": {"id": "BE_790", "rarity": "LEGENDARY", "cls": "PRIEST", "cost": 8}, "Deathblossom": {"id": "BE_802", "rarity": "EPIC", "cls": "DRUID", "cost": 2}, "Unnatural Cold": {"id": "BE_842", "rarity": "EPIC", "cls": "SHAMAN", "cost": 2}, "Curious Grimlynx": {"id": "BE_850t", "rarity": "EPIC", "cls": "DRUID", "cost": 5}, "Ammunae": {"id": "BE_852", "rarity": "LEGENDARY", "cls": "DRUID", "cost": 8}, "Freya, Emerald Architect": {"id": "BE_856", "rarity": "LEGENDARY", "cls": "DRUID", "cost": 6}, "Stone Trogg": {"id": "BE_994", "rarity": "EPIC", "cls": "NEUTRAL", "cost": 8}, "Frontline Ironborn": {"id": "BE_996", "rarity": "EPIC", "cls": "NEUTRAL", "cost": 5}, "Proto-Pandaren": {"id": "BE_997", "rarity": "EPIC", "cls": "NEUTRAL", "cost": 2}}, "unplayed": [["DEATHKNIGHT", "EPIC", "Bloodfiend"], ["DEATHKNIGHT", "EPIC", "Uldir Quarantine"], ["DEATHKNIGHT", "LEGENDARY", "Fetid Devourer"], ["DEATHKNIGHT", "LEGENDARY", "G'huun"], ["DEMONHUNTER", "EPIC", "Encircle"], ["DEMONHUNTER", "LEGENDARY", "Broodqueen Sha'kar"], ["DEMONHUNTER", "LEGENDARY", "Ravitz"], ["DRUID", "EPIC", "Curious Grimlynx"], ["DRUID", "EPIC", "Deathblossom"], ["DRUID", "LEGENDARY", "Ammunae"], ["DRUID", "LEGENDARY", "Freya, Emerald Architect"], ["HUNTER", "EPIC", "Primal Rockfang"], ["HUNTER", "EPIC", "Reload"], ["HUNTER", "LEGENDARY", "Kronn the Impaler"], ["HUNTER", "LEGENDARY", "Mimiron"], ["MAGE", "EPIC", "Icebelt Magi"], ["NEUTRAL", "EPIC", "Mogu Warmaster"], ["NEUTRAL", "EPIC", "Proto-Pandaren"], ["NEUTRAL", "EPIC", "Stone Trogg"], ["NEUTRAL", "EPIC", "Tome Translator"], ["NEUTRAL", "LEGENDARY", "Y'Shaarj, Titan Bane"], ["PRIEST", "EPIC", "Mismatcher"], ["PRIEST", "LEGENDARY", "Blade of The Black Empire"], ["PRIEST", "LEGENDARY", "Zer'Ontu"], ["ROGUE", "EPIC", "Shadowcrafter"], ["ROGUE", "EPIC", "Wandering Seeker"], ["ROGUE", "LEGENDARY", "Drest'agath"], ["ROGUE", "LEGENDARY", "The Unknowable One"], ["SHAMAN", "EPIC", "Primus of Power"], ["SHAMAN", "LEGENDARY", "Therazane the Earthmother"], ["WARRIOR", "EPIC", "Animator of Iron"], ["WARRIOR", "EPIC", "Anvil of Reshaping"], ["WARRIOR", "LEGENDARY", "Setesh"]], "meta": [{"level": "Diamond 4-1", "archetype": "Zoolock", "winrate": "62.5", "popularity_pct": "12.1", "games": "26681", "avg_turns": "7.1", "avg_duration_min": "5.9", "climbing_stars_per_hour": "2.52"}, {"level": "Diamond 4-1", "archetype": "Shredslock", "winrate": "62.2", "popularity_pct": "7.8", "games": "17075", "avg_turns": "7.0", "avg_duration_min": "5.5", "climbing_stars_per_hour": "2.63"}, {"level": "Diamond 4-1", "archetype": "Zee C'Thun Shaman", "winrate": "60.2", "popularity_pct": "4.7", "games": "10350", "avg_turns": "7.8", "avg_duration_min": "7.3", "climbing_stars_per_hour": "1.67"}, {"level": "Diamond 4-1", "archetype": "Handbuff DK", "winrate": "59.5", "popularity_pct": "1.8", "games": "4039", "avg_turns": "7.7", "avg_duration_min": "7.5", "climbing_stars_per_hour": "1.53"}, {"level": "Diamond 4-1", "archetype": "C'Thun DH", "winrate": "59.1", "popularity_pct": "14.0", "games": "30788", "avg_turns": "8.4", "avg_duration_min": "7.8", "climbing_stars_per_hour": "1.41"}, {"level": "Diamond 4-1", "archetype": "C'Thun Warlock", "winrate": "57.1", "popularity_pct": "7.4", "games": "16206", "avg_turns": "9.1", "avg_duration_min": "8.1", "climbing_stars_per_hour": "1.05"}, {"level": "Diamond 4-1", "archetype": "N'Zoth Handbuff DK", "winrate": "56.4", "popularity_pct": "3.7", "games": "8238", "avg_turns": "7.9", "avg_duration_min": "7.8", "climbing_stars_per_hour": "0.99"}, {"level": "Diamond 4-1", "archetype": "Void C'Thun DH", "winrate": "56.1", "popularity_pct": "3.5", "games": "7609", "avg_turns": "8.0", "avg_duration_min": "7.3", "climbing_stars_per_hour": "1.01"}, {"level": "Diamond 4-1", "archetype": "Harold C'Thun Warlock", "winrate": "53.3", "popularity_pct": "2.5", "games": "5395", "avg_turns": "8.9", "avg_duration_min": "8.3", "climbing_stars_per_hour": "0.48"}, {"level": "Diamond 4-1", "archetype": "Egg Priest", "winrate": "53.3", "popularity_pct": "0.8", "games": "1722", "avg_turns": "9.8", "avg_duration_min": "9.1", "climbing_stars_per_hour": "0.44"}, {"level": "Diamond 4-1", "archetype": "Mug Shaman", "winrate": "52.9", "popularity_pct": "2.1", "games": "4632", "avg_turns": "8.3", "avg_duration_min": "8.4", "climbing_stars_per_hour": "0.41"}, {"level": "Diamond 4-1", "archetype": "Pirate Warrior", "winrate": "52.6", "popularity_pct": "0.7", "games": "1490", "avg_turns": "7.4", "avg_duration_min": "6.2", "climbing_stars_per_hour": "0.49"}, {"level": "Diamond 4-1", "archetype": "Dragon Warrior", "winrate": "51.8", "popularity_pct": "1.6", "games": "3417", "avg_turns": "7.6", "avg_duration_min": "6.8", "climbing_stars_per_hour": "0.31"}, {"level": "Diamond 4-1", "archetype": "Pure Paladin", "winrate": "51.6", "popularity_pct": "1.6", "games": "3533", "avg_turns": "8.8", "avg_duration_min": "7.7", "climbing_stars_per_hour": "0.25"}, {"level": "Diamond 4-1", "archetype": "Burn Mage", "winrate": "50.7", "popularity_pct": "0.6", "games": "1217", "avg_turns": "7.7", "avg_duration_min": "6.8", "climbing_stars_per_hour": "0.12"}, {"level": "Top 5k", "archetype": "Zoolock", "winrate": "57.4", "popularity_pct": "12.7", "games": "9974", "avg_turns": "7.2", "avg_duration_min": "6.3", "climbing_stars_per_hour": "1.41"}, {"level": "Top 5k", "archetype": "Shredslock", "winrate": "56.8", "popularity_pct": "8.7", "games": "6805", "avg_turns": "7.1", "avg_duration_min": "6.0", "climbing_stars_per_hour": "1.36"}, {"level": "Top 5k", "archetype": "Zee C'Thun Shaman", "winrate": "56.1", "popularity_pct": "6.9", "games": "5417", "avg_turns": "7.8", "avg_duration_min": "7.6", "climbing_stars_per_hour": "0.97"}, {"level": "Top 5k", "archetype": "Handbuff DK", "winrate": "55.8", "popularity_pct": "4.4", "games": "3422", "avg_turns": "7.5", "avg_duration_min": "7.7", "climbing_stars_per_hour": "0.90"}, {"level": "Top 5k", "archetype": "C'Thun Warlock", "winrate": "54.3", "popularity_pct": "3.8", "games": "2992", "avg_turns": "8.9", "avg_duration_min": "8.3", "climbing_stars_per_hour": "0.63"}, {"level": "Top 5k", "archetype": "Harold C'Thun Warlock", "winrate": "52.3", "popularity_pct": "2.3", "games": "1836", "avg_turns": "8.7", "avg_duration_min": "8.3", "climbing_stars_per_hour": "0.34"}, {"level": "Top 5k", "archetype": "C'Thun DH", "winrate": "52.3", "popularity_pct": "15.8", "games": "12403", "avg_turns": "8.3", "avg_duration_min": "8.0", "climbing_stars_per_hour": "0.35"}, {"level": "Top 5k", "archetype": "N'Zoth Handbuff DK", "winrate": "52.3", "popularity_pct": "6.8", "games": "5304", "avg_turns": "7.7", "avg_duration_min": "8.0", "climbing_stars_per_hour": "0.34"}, {"level": "Top 5k", "archetype": "Void C'Thun DH", "winrate": "52.0", "popularity_pct": "4.1", "games": "3197", "avg_turns": "8.0", "avg_duration_min": "7.5", "climbing_stars_per_hour": "0.33"}, {"level": "Top 5k", "archetype": "Egg Priest", "winrate": "51.1", "popularity_pct": "1.3", "games": "1014", "avg_turns": "9.3", "avg_duration_min": "8.9", "climbing_stars_per_hour": "0.15"}, {"level": "Top 5k", "archetype": "Thief Priest", "winrate": "50.4", "popularity_pct": "3.3", "games": "2608", "avg_turns": "10.5", "avg_duration_min": "10.4", "climbing_stars_per_hour": "0.05"}]};
+const CLASS = {
+  "Warlock": ["#a46cae", "#1a0f1f"], "Demon Hunter": ["#3f7a3a", "#f3f7ee"], "Shaman": ["#4f74c6", "#f2f5ff"],
+  "Death Knight": ["#6c5fa8", "#f4f1ff"], "Paladin": ["#e1c432", "#2a2306"], "Priest": ["#d4d0d8", "#1d1a22"],
+  "Rogue": ["#8a8a8f", "#141416"], "Warrior": ["#b8322b", "#fff1ef"], "Mage": ["#5fc2dc", "#08262e"],
+  "Druid": ["#e8931e", "#2a1702"], "Hunter": ["#5f9b3c", "#f1f8ec"], "Neutral": ["#7d7486", "#f5f2f7"]
+};
+const CLS_NAME = { DEATHKNIGHT: "Death Knight", DEMONHUNTER: "Demon Hunter", DRUID: "Druid", HUNTER: "Hunter", MAGE: "Mage",
+  NEUTRAL: "Neutral", PALADIN: "Paladin", PRIEST: "Priest", ROGUE: "Rogue", SHAMAN: "Shaman", WARLOCK: "Warlock", WARRIOR: "Warrior" };
+
+const TIERS = [
+  { t: "core", label: "Core", sub: "Built around it", cards: [
+    ["C'Thun, Eye of the Empire", "Core in all five C'Thun archetypes, across Demon Hunter, Shaman and Warlock."],
+    ["Floating Lessons", "In every Zoolock list and all but one Shredslock list, the two best decks."],
+    ["Tentacle Lash", "In every C'Thun DH and Void C'Thun DH list at both levels."],
+    ["Zakajz the Corruptor", "Core in Zoolock and Shredslock at both levels. Lists without it are small experiments."],
+    ["Kith'ix", "Core in C'Thun and Harold Warlock. Optional in aggro Warlock."]
+  ]},
+  { t: "flex", label: "Flex", sub: "Depends on the build", cards: [
+    ["Frontline Ironborn", "In 12 of 23 C'Thun DH lists, with little effect on win rate either way."],
+    ["Ritual of Excess", "Core in Harold Warlock, and in the best Top 5k C'Thun Warlock list (60.3%)."],
+    ["Rajh", "Part of Pure Paladin's package with Amitut and Halls. Consistent, but Paladin sits near 55%."],
+    ["Amitut, Keeper of Amitus", "In every Paladin list but one."],
+    ["Halls of Origination", "Travels with Rajh and Amitut in Pure Paladin."],
+    ["Oathbinder's Aura", "In half the Paladin lists."]
+  ]},
+  { t: "trap", label: "Trap", sub: "Played, but costs win rate", cards: [
+    ["N'Zoth, Dream's End", "Defines N'Zoth Handbuff DK, yet plain Handbuff DK without it wins 3–4 points more at both levels."]
+  ]},
+  { t: "fringe", label: "Fringe", sub: "One deck, small samples", cards: [
+    ["Mastermind Yogg-Saron", "Core in AYAYA Rogue, a 54% deck. Also in one Holy Paladin list."],
+    ["M.O.T.H.E.R.", "In three Warlock lists, with mixed results from 52.5% to 58.5%."],
+    ["Discs of Norgannon", "One Summoner Mage list at Top 5k: 54.9% over 153 games."],
+    ["Isiset", "Same Summoner Mage list as Discs and Thaw From Ice."],
+    ["Thaw From Ice", "Same Summoner Mage list as Discs and Isiset."],
+    ["Neptulon, Lord of Tides", "One Zee C'Thun Shaman list, 65.4% over 130 games."],
+    ["Archaedas", "One Egg Warrior list, 57.6% over 158 games."],
+    ["Unnatural Cold", "One Mug Shaman list at Top 5k, 52.0%."],
+    ["Dark Deacon", "One Thief Priest list at Top 5k, 51.9%."]
+  ]}
+];
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const fmt = n => n.toLocaleString("en-GB");
+
+function tile(name, bench = false) {
+  const c = DATA.cards[name];
+  const rar = c.rarity === "LEGENDARY" ? "var(--legendary)" : "var(--epic)";
+  return `<div class="tile${bench ? " bench" : ""}" style="--art:url('tiles/${c.id}.png');--rar:${rar}" title="${esc(name)}">
+    <span class="cost">${c.cost}</span><span class="name">${esc(name)}</span>${c.rarity === "LEGENDARY" ? '<span class="star" aria-label="Legendary">★</span>' : '<span class="star"></span>'}</div>`;
+}
+
+function tierOf(name, share, lists, arch) {
+  if (name === "N'Zoth, Dream's End" && arch === "BFU N'Zoth Handbuff DK") return "trap";
+  if (lists <= 1 && share >= 0.8) return "fringe";
+  return share >= 0.8 ? "core" : share >= 0.3 ? "flex" : "fringe";
+}
+
+const L = DATA.levels;
+const played = Object.keys(DATA.cards).filter(n => (L.d4.cardLists[n] || 0) + (L.t5k.cardLists[n] || 0) > 0);
+
+document.getElementById("stats").innerHTML = [
+  [`${played.length}<small>/54</small>`, "epics & legendaries in at least one list"],
+  [fmt(L.d4.lists + L.t5k.lists), "deck lists read"],
+  [fmt(L.d4.games + L.t5k.games), "games behind them"],
+  [`${(L.d4.cardLists["C'Thun, Eye of the Empire"] || 0) + (L.t5k.cardLists["C'Thun, Eye of the Empire"] || 0)}`, "lists running C'Thun, Eye of the Empire"]
+].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
+
+document.getElementById("tiers").innerHTML = TIERS.map(T => `
+  <div class="tier" data-t="${T.t}">
+    <div class="tier-label"><strong>${T.label}</strong><span>${T.sub}</span></div>
+    <div class="tier-cards">${T.cards.map(([n, note]) => `
+      <div class="tcard">${tile(n)}
+        <div class="meta"><span>Lists <b>${L.d4.cardLists[n] || 0}</b> / <b>${L.t5k.cardLists[n] || 0}</b></span><span>${CLS_NAME[DATA.cards[n].cls]}</span></div>
+        <p>${esc(note)}</p></div>`).join("")}
+    </div></div>`).join("");
+
+// class board
+const archs = {};
+for (const lv of ["d4", "t5k"]) for (const [a, e] of Object.entries(L[lv].archetypes)) {
+  (archs[a] ||= { cls: e.cls, games: 0 })[lv] = e; archs[a].games += e.games;
+}
+const classes = {};
+for (const [a, e] of Object.entries(archs)) (classes[e.cls] ||= { games: 0, archs: [] }), classes[e.cls].games += e.games, classes[e.cls].archs.push([a, e]);
+
+document.getElementById("board").innerHTML = Object.entries(classes).sort((x, y) => y[1].games - x[1].games).map(([cls, C]) => {
+  const [bg, ink] = CLASS[cls] || CLASS.Neutral;
+  const rows = C.archs.sort((x, y) => y[1].games - x[1].games).map(([a, e]) => {
+    const names = [...new Set([...Object.keys(e.d4?.cards || {}), ...Object.keys(e.t5k?.cards || {})])];
+    names.sort((x, y) => ((e.d4?.cards[y]?.share || 0) + (e.t5k?.cards[y]?.share || 0)) - ((e.d4?.cards[x]?.share || 0) + (e.t5k?.cards[x]?.share || 0)));
+    const wr = lv => e[lv] ? `<span>${lv === "d4" ? "D4-1" : "5k"} <b>${e[lv].wr.toFixed(1)}%</b> · ${e[lv].lists}</span>` : "";
+    const body = names.length ? names.map(n => {
+      const s4 = e.d4?.cards[n], s5 = e.t5k?.cards[n];
+      const share = Math.max(s4?.share || 0, s5?.share || 0);
+      const lists = (s4?.n || 0) + (s5?.n || 0);
+      const totalLists = (e.d4?.lists || 0) + (e.t5k?.lists || 0);
+      const t = tierOf(n, share, totalLists, a);
+      const bar = (lv, s) => e[lv] ? `<div class="bar ${lv}"><i style="width:${Math.round((s?.share || 0) * 100)}%"></i></div>` : `<div class="bar ${lv} na"></div>`;
+      return `<div class="row">${tile(n)}<div class="bars" aria-label="Diamond ${Math.round((s4?.share || 0) * 100)}%, Top 5k ${Math.round((s5?.share || 0) * 100)}%">${bar("d4", s4)}${bar("t5k", s5)}</div><span class="chip ${t}">${t}</span></div>`;
+    }).join("") : `<p class="none">No Black Empire epics or legendaries.</p>`;
+    return `<div class="arch"><div class="arch-top"><h3>${esc(a)}</h3><div class="arch-wr">${wr("d4")}${wr("t5k")}</div></div>${body}</div>`;
+  }).join("");
+  return `<div class="cls" style="--cc:${bg};--cc-ink:${ink}"><div class="cls-head">${esc(cls)}<span>${fmt(C.games)} games</span></div>${rows}</div>`;
+}).join("");
+
+// slope chart from the archetype snapshot
+(function slope() {
+  const by = {};
+  for (const r of DATA.meta) (by[r.archetype] ||= {})[r.level === "Top 5k" ? "t" : "d"] = +r.winrate;
+  const rows = Object.entries(by).filter(([, v]) => v.d != null && v.t != null);
+  const clsOf = a => (archs[a]?.cls) || (a.includes("Priest") ? "Priest" : "Warlock");
+  const W = 560, H = 360, top = 28, bot = 24, x1 = 150, x2 = W - 150, lo = 50, hi = 64;
+  const y = v => top + (hi - v) / (hi - lo) * (H - top - bot);
+  const spread = (items) => { // nudge labels apart, keep order
+    items.sort((a, b) => a.y - b.y);
+    for (let k = 0; k < 40; k++) for (let i = 1; i < items.length; i++) {
+      const gap = items[i].y - items[i - 1].y;
+      if (gap < 15) { const d = (15 - gap) / 2; items[i].y += d; items[i - 1].y -= d; }
+    }
+    return items;
+  };
+  const left = spread(rows.map(([a, v]) => ({ a, v: v.d, y: y(v.d) })));
+  const right = spread(rows.map(([a, v]) => ({ a, v: v.t, y: y(v.t) })));
+  const ticks = [50, 54, 58, 62].map(v => `<line x1="${x1}" x2="${x2}" y1="${y(v)}" y2="${y(v)}" stroke="var(--rule)" stroke-dasharray="2 4"/><text x="${(x1 + x2) / 2}" y="${y(v) - 4}" fill="var(--faint)" font-size="10" text-anchor="middle" font-family="IBM Plex Mono, monospace">${v}%</text>`).join("");
+  const lines = rows.map(([a, v]) => {
+    const col = (CLASS[clsOf(a)] || CLASS.Neutral)[0];
+    const hot = a === "C'Thun DH";
+    return `<line x1="${x1}" y1="${y(v.d)}" x2="${x2}" y2="${y(v.t)}" stroke="${col}" stroke-width="${hot ? 3.5 : 2}" opacity="${hot ? 1 : .8}"/>
+      <circle cx="${x1}" cy="${y(v.d)}" r="3.5" fill="${col}"/><circle cx="${x2}" cy="${y(v.t)}" r="3.5" fill="${col}"/>`;
+  }).join("");
+  const lab = (it, side) => `<text x="${side === "l" ? x1 - 10 : x2 + 10}" y="${it.y + 4}" fill="${it.a === "C'Thun DH" ? "var(--ink)" : "var(--mute)"}" font-size="11.5" font-weight="${it.a === "C'Thun DH" ? 700 : 400}" text-anchor="${side === "l" ? "end" : "start"}" font-family="Alegreya Sans, sans-serif">${side === "l" ? esc(it.a) + " " : ""}<tspan font-family="IBM Plex Mono, monospace" fill="var(--ink)">${it.v.toFixed(1)}</tspan>${side === "r" ? " " + esc(it.a) : ""}</text>`;
+  document.getElementById("slope").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Slope chart of archetype win rates from Diamond 4-1 to Top 5k">
+    ${ticks}
+    <text x="${x1}" y="14" fill="var(--mute)" font-size="11" text-anchor="middle" font-weight="700" font-family="Alegreya Sans, sans-serif" letter-spacing="1.5">DIAMOND 4-1</text>
+    <text x="${x2}" y="14" fill="var(--legendary)" font-size="11" text-anchor="middle" font-weight="700" font-family="Alegreya Sans, sans-serif" letter-spacing="1.5">TOP 5K</text>
+    ${lines}${left.map(i => lab(i, "l")).join("")}${right.map(i => lab(i, "r")).join("")}</svg>`;
+})();
+
+// N'Zoth duel
+(function duel() {
+  const a = archs["BFU Handbuff DK"], b = archs["BFU N'Zoth Handbuff DK"];
+  const sc = v => `${Math.max(0, (v - 50) / 12 * 100)}%`;
+  const [dk] = CLASS["Death Knight"];
+  const row = (lv, label) => `<div class="duel-row"><span>${label}</span><div class="duel-bars">
+      <div class="dbar"><i style="width:${sc(a[lv].wr)};background:${dk}"></i>${a[lv].wr.toFixed(1)}%</div>
+      <div class="dbar"><i style="width:${sc(b[lv].wr)};background:var(--trap)"></i>${b[lv].wr.toFixed(1)}%</div></div></div>`;
+  document.getElementById("duel").innerHTML = `
+    <div class="legend"><span><i class="sw" style="background:${dk}"></i>BFU Handbuff DK (no N'Zoth)</span><span><i class="sw" style="background:var(--trap)"></i>N'Zoth Handbuff DK</span></div>
+    ${row("d4", "Diamond 4-1")}${row("t5k", "Top 5k")}
+    <p class="num" style="font-size:.78rem;color:var(--faint)">Bars start at 50%. ${a.d4.lists + a.t5k.lists} and ${b.d4.lists + b.t5k.lists} lists.</p>`;
+})();
+
+// bench
+(function bench() {
+  const groups = {};
+  for (const [cls, , name] of DATA.unplayed) (groups[cls] ||= []).push(name);
+  document.getElementById("bench-lede").textContent = `${DATA.unplayed.length} of the 54 epics and legendaries don't appear in any of the ${L.d4.lists + L.t5k.lists} lists. Death Knight, Druid, Hunter and Rogue have no class epic or legendary in play at all.`;
+  document.getElementById("bench").innerHTML = Object.keys(groups).sort().map(cls =>
+    `<div class="bench-cls"><h4>${CLS_NAME[cls]}</h4>${groups[cls].map(n => tile(n, true)).join("")}</div>`).join("");
+})();
+
+document.getElementById("m-d4").textContent = `${L.d4.lists} lists (${fmt(L.d4.games)} games)`;
+document.getElementById("m-t5k").textContent = `${L.t5k.lists} lists (${fmt(L.t5k.games)} games)`;
+</script>
+
+</body>
+</html>

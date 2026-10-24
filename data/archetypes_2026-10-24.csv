@@ -1,0 +1,27 @@
+level,archetype,winrate,popularity_pct,games,avg_turns,avg_duration_min,climbing_stars_per_hour
+Diamond 4-1,Zoolock,62.5,12.1,26681,7.1,5.9,2.52
+Diamond 4-1,Shredslock,62.2,7.8,17075,7.0,5.5,2.63
+Diamond 4-1,Zee C'Thun Shaman,60.2,4.7,10350,7.8,7.3,1.67
+Diamond 4-1,Handbuff DK,59.5,1.8,4039,7.7,7.5,1.53
+Diamond 4-1,C'Thun DH,59.1,14.0,30788,8.4,7.8,1.41
+Diamond 4-1,C'Thun Warlock,57.1,7.4,16206,9.1,8.1,1.05
+Diamond 4-1,N'Zoth Handbuff DK,56.4,3.7,8238,7.9,7.8,0.99
+Diamond 4-1,Void C'Thun DH,56.1,3.5,7609,8.0,7.3,1.01
+Diamond 4-1,Harold C'Thun Warlock,53.3,2.5,5395,8.9,8.3,0.48
+Diamond 4-1,Egg Priest,53.3,0.8,1722,9.8,9.1,0.44
+Diamond 4-1,Mug Shaman,52.9,2.1,4632,8.3,8.4,0.41
+Diamond 4-1,Pirate Warrior,52.6,0.7,1490,7.4,6.2,0.49
+Diamond 4-1,Dragon Warrior,51.8,1.6,3417,7.6,6.8,0.31
+Diamond 4-1,Pure Paladin,51.6,1.6,3533,8.8,7.7,0.25
+Diamond 4-1,Burn Mage,50.7,0.6,1217,7.7,6.8,0.12
+Top 5k,Zoolock,57.4,12.7,9974,7.2,6.3,1.41
+Top 5k,Shredslock,56.8,8.7,6805,7.1,6.0,1.36
+Top 5k,Zee C'Thun Shaman,56.1,6.9,5417,7.8,7.6,0.97
+Top 5k,Handbuff DK,55.8,4.4,3422,7.5,7.7,0.90
+Top 5k,C'Thun Warlock,54.3,3.8,2992,8.9,8.3,0.63
+Top 5k,Harold C'Thun Warlock,52.3,2.3,1836,8.7,8.3,0.34
+Top 5k,C'Thun DH,52.3,15.8,12403,8.3,8.0,0.35
+Top 5k,N'Zoth Handbuff DK,52.3,6.8,5304,7.7,8.0,0.34
+Top 5k,Void C'Thun DH,52.0,4.1,3197,8.0,7.5,0.33
+Top 5k,Egg Priest,51.1,1.3,1014,9.3,8.9,0.15
+Top 5k,Thief Priest,50.4,3.3,2608,10.5,10.4,0.05

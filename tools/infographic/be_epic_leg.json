@@ -1,0 +1,542 @@
+[
+ {
+  "id": "BE_004",
+  "dbfId": 132353,
+  "name": "Rajh",
+  "rarity": "LEGENDARY",
+  "cls": "PALADIN",
+  "classes": null,
+  "cost": 5,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_005",
+  "dbfId": 132346,
+  "name": "Ritual of Excess",
+  "rarity": "EPIC",
+  "cls": "WARLOCK",
+  "classes": null,
+  "cost": 3,
+  "type": "SPELL"
+ },
+ {
+  "id": "BE_008",
+  "dbfId": 132535,
+  "name": "Mogu Warmaster",
+  "rarity": "EPIC",
+  "cls": "NEUTRAL",
+  "classes": null,
+  "cost": 3,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_009",
+  "dbfId": 132547,
+  "name": "Mastermind Yogg-Saron",
+  "rarity": "LEGENDARY",
+  "cls": "NEUTRAL",
+  "classes": null,
+  "cost": 9,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_012",
+  "dbfId": 132348,
+  "name": "Dark Deacon",
+  "rarity": "EPIC",
+  "cls": "PRIEST",
+  "classes": null,
+  "cost": 3,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_013",
+  "dbfId": 132339,
+  "name": "C'Thun, Eye of the Empire",
+  "rarity": "LEGENDARY",
+  "cls": "NEUTRAL",
+  "classes": null,
+  "cost": 10,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_017",
+  "dbfId": 128389,
+  "name": "N'Zoth, Dream's End",
+  "rarity": "LEGENDARY",
+  "cls": "NEUTRAL",
+  "classes": null,
+  "cost": 15,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_036",
+  "dbfId": 128132,
+  "name": "M.O.T.H.E.R.",
+  "rarity": "LEGENDARY",
+  "cls": "NEUTRAL",
+  "classes": null,
+  "cost": 9,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_042",
+  "dbfId": 128696,
+  "name": "Anvil of Reshaping",
+  "rarity": "EPIC",
+  "cls": "WARRIOR",
+  "classes": null,
+  "cost": 2,
+  "type": "SPELL"
+ },
+ {
+  "id": "BE_045",
+  "dbfId": 129089,
+  "name": "Mismatcher",
+  "rarity": "EPIC",
+  "cls": "PRIEST",
+  "classes": null,
+  "cost": 5,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_055",
+  "dbfId": 129245,
+  "name": "Archaedas",
+  "rarity": "LEGENDARY",
+  "cls": "WARRIOR",
+  "classes": null,
+  "cost": 4,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_090",
+  "dbfId": 129824,
+  "name": "Kith'ix",
+  "rarity": "LEGENDARY",
+  "cls": "WARLOCK",
+  "classes": null,
+  "cost": 6,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_094",
+  "dbfId": 129805,
+  "name": "Floating Lessons",
+  "rarity": "EPIC",
+  "cls": "WARLOCK",
+  "classes": null,
+  "cost": 1,
+  "type": "SPELL"
+ },
+ {
+  "id": "BE_143",
+  "dbfId": 130327,
+  "name": "Amitut, Keeper of Amitus",
+  "rarity": "LEGENDARY",
+  "cls": "PALADIN",
+  "classes": null,
+  "cost": 7,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_146",
+  "dbfId": 130673,
+  "name": "Oathbinder's Aura",
+  "rarity": "EPIC",
+  "cls": "PALADIN",
+  "classes": null,
+  "cost": 3,
+  "type": "SPELL"
+ },
+ {
+  "id": "BE_171",
+  "dbfId": 131056,
+  "name": "Primus of Power",
+  "rarity": "EPIC",
+  "cls": "SHAMAN",
+  "classes": null,
+  "cost": 4,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_183",
+  "dbfId": 129839,
+  "name": "Halls of Origination",
+  "rarity": "EPIC",
+  "cls": "PALADIN",
+  "classes": null,
+  "cost": 8,
+  "type": "SPELL"
+ },
+ {
+  "id": "BE_209",
+  "dbfId": 131240,
+  "name": "Neptulon, Lord of Tides",
+  "rarity": "LEGENDARY",
+  "cls": "SHAMAN",
+  "classes": null,
+  "cost": 7,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_227",
+  "dbfId": 130402,
+  "name": "Blade of The Black Empire",
+  "rarity": "LEGENDARY",
+  "cls": "PRIEST",
+  "classes": null,
+  "cost": 3,
+  "type": "WEAPON"
+ },
+ {
+  "id": "BE_230",
+  "dbfId": 130651,
+  "name": "Ravitz",
+  "rarity": "LEGENDARY",
+  "cls": "DEMONHUNTER",
+  "classes": null,
+  "cost": 4,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_250",
+  "dbfId": 129112,
+  "name": "Discs of Norgannon",
+  "rarity": "LEGENDARY",
+  "cls": "MAGE",
+  "classes": null,
+  "cost": 2,
+  "type": "SPELL"
+ },
+ {
+  "id": "BE_257",
+  "dbfId": 129801,
+  "name": "Thaw From Ice",
+  "rarity": "EPIC",
+  "cls": "MAGE",
+  "classes": null,
+  "cost": 2,
+  "type": "SPELL"
+ },
+ {
+  "id": "BE_259",
+  "dbfId": 129851,
+  "name": "Isiset",
+  "rarity": "LEGENDARY",
+  "cls": "MAGE",
+  "classes": null,
+  "cost": 6,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_265",
+  "dbfId": 130520,
+  "name": "Encircle",
+  "rarity": "EPIC",
+  "cls": "DEMONHUNTER",
+  "classes": null,
+  "cost": 6,
+  "type": "SPELL"
+ },
+ {
+  "id": "BE_270",
+  "dbfId": 129889,
+  "name": "Icebelt Magi",
+  "rarity": "EPIC",
+  "cls": "MAGE",
+  "classes": null,
+  "cost": 5,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_283",
+  "dbfId": 130395,
+  "name": "Bloodfiend",
+  "rarity": "EPIC",
+  "cls": "DEATHKNIGHT",
+  "classes": null,
+  "cost": 4,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_287",
+  "dbfId": 130341,
+  "name": "G'huun",
+  "rarity": "LEGENDARY",
+  "cls": "DEATHKNIGHT",
+  "classes": null,
+  "cost": 8,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_327",
+  "dbfId": 129235,
+  "name": "Tome Translator",
+  "rarity": "EPIC",
+  "cls": "NEUTRAL",
+  "classes": null,
+  "cost": 4,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_337",
+  "dbfId": 131010,
+  "name": "Therazane the Earthmother",
+  "rarity": "LEGENDARY",
+  "cls": "SHAMAN",
+  "classes": null,
+  "cost": 6,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_555",
+  "dbfId": 129823,
+  "name": "Reload",
+  "rarity": "EPIC",
+  "cls": "HUNTER",
+  "classes": null,
+  "cost": 8,
+  "type": "SPELL"
+ },
+ {
+  "id": "BE_557",
+  "dbfId": 129935,
+  "name": "Setesh",
+  "rarity": "LEGENDARY",
+  "cls": "WARRIOR",
+  "classes": null,
+  "cost": 7,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_565",
+  "dbfId": 130117,
+  "name": "Broodqueen Sha'kar",
+  "rarity": "LEGENDARY",
+  "cls": "DEMONHUNTER",
+  "classes": null,
+  "cost": 5,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_588",
+  "dbfId": 132009,
+  "name": "Mimiron",
+  "rarity": "LEGENDARY",
+  "cls": "HUNTER",
+  "classes": null,
+  "cost": 1,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_600",
+  "dbfId": 130279,
+  "name": "Animator of Iron",
+  "rarity": "EPIC",
+  "cls": "WARRIOR",
+  "classes": null,
+  "cost": 3,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_702",
+  "dbfId": 129944,
+  "name": "Shadowcrafter",
+  "rarity": "EPIC",
+  "cls": "ROGUE",
+  "classes": null,
+  "cost": 2,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_703",
+  "dbfId": 129945,
+  "name": "Drest'agath",
+  "rarity": "LEGENDARY",
+  "cls": "ROGUE",
+  "classes": null,
+  "cost": 4,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_723",
+  "dbfId": 130113,
+  "name": "Wandering Seeker",
+  "rarity": "EPIC",
+  "cls": "ROGUE",
+  "classes": null,
+  "cost": 4,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_725",
+  "dbfId": 130122,
+  "name": "The Unknowable One",
+  "rarity": "LEGENDARY",
+  "cls": "ROGUE",
+  "classes": null,
+  "cost": 5,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_728",
+  "dbfId": 130285,
+  "name": "Zakajz the Corruptor",
+  "rarity": "LEGENDARY",
+  "cls": "WARLOCK",
+  "classes": null,
+  "cost": 4,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_731",
+  "dbfId": 130764,
+  "name": "Primal Rockfang",
+  "rarity": "EPIC",
+  "cls": "HUNTER",
+  "classes": null,
+  "cost": 3,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_732",
+  "dbfId": 130765,
+  "name": "Kronn the Impaler",
+  "rarity": "LEGENDARY",
+  "cls": "HUNTER",
+  "classes": null,
+  "cost": 10,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_771",
+  "dbfId": 131262,
+  "name": "Tentacle Lash",
+  "rarity": "EPIC",
+  "cls": "DEMONHUNTER",
+  "classes": null,
+  "cost": 5,
+  "type": "WEAPON"
+ },
+ {
+  "id": "BE_780",
+  "dbfId": 131126,
+  "name": "Uldir Quarantine",
+  "rarity": "EPIC",
+  "cls": "DEATHKNIGHT",
+  "classes": null,
+  "cost": 3,
+  "type": "LOCATION"
+ },
+ {
+  "id": "BE_781",
+  "dbfId": 131127,
+  "name": "Fetid Devourer",
+  "rarity": "LEGENDARY",
+  "cls": "DEATHKNIGHT",
+  "classes": null,
+  "cost": 7,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_784",
+  "dbfId": 131851,
+  "name": "Y'Shaarj, Titan Bane",
+  "rarity": "LEGENDARY",
+  "cls": "NEUTRAL",
+  "classes": null,
+  "cost": 10,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_790",
+  "dbfId": 130000,
+  "name": "Zer'Ontu",
+  "rarity": "LEGENDARY",
+  "cls": "PRIEST",
+  "classes": null,
+  "cost": 8,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_802",
+  "dbfId": 131180,
+  "name": "Deathblossom",
+  "rarity": "EPIC",
+  "cls": "DRUID",
+  "classes": null,
+  "cost": 2,
+  "type": "SPELL"
+ },
+ {
+  "id": "BE_842",
+  "dbfId": 131059,
+  "name": "Unnatural Cold",
+  "rarity": "EPIC",
+  "cls": "SHAMAN",
+  "classes": null,
+  "cost": 2,
+  "type": "SPELL"
+ },
+ {
+  "id": "BE_850t",
+  "dbfId": 129814,
+  "name": "Curious Grimlynx",
+  "rarity": "EPIC",
+  "cls": "DRUID",
+  "classes": null,
+  "cost": 5,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_852",
+  "dbfId": 129842,
+  "name": "Ammunae",
+  "rarity": "LEGENDARY",
+  "cls": "DRUID",
+  "classes": null,
+  "cost": 8,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_856",
+  "dbfId": 129937,
+  "name": "Freya, Emerald Architect",
+  "rarity": "LEGENDARY",
+  "cls": "DRUID",
+  "classes": null,
+  "cost": 6,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_994",
+  "dbfId": 131454,
+  "name": "Stone Trogg",
+  "rarity": "EPIC",
+  "cls": "NEUTRAL",
+  "classes": null,
+  "cost": 8,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_996",
+  "dbfId": 131432,
+  "name": "Frontline Ironborn",
+  "rarity": "EPIC",
+  "cls": "NEUTRAL",
+  "classes": null,
+  "cost": 5,
+  "type": "MINION"
+ },
+ {
+  "id": "BE_997",
+  "dbfId": 132135,
+  "name": "Proto-Pandaren",
+  "rarity": "EPIC",
+  "cls": "NEUTRAL",
+  "classes": null,
+  "cost": 2,
+  "type": "MINION"
+ }
+]
