@@ -1,2 +1,4 @@
 .claude/
 __pycache__/
+tools/infographic/black-empire-census.html
+tools/infographic/tile_ids.txt

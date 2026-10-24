@@ -1,49 +1,49 @@
 deck,screenshot,archetype,winrate,games,dust,be_epic_legendary
-1,9,Zoolock,61.0,2092,9200,Floating Lessons;Zakajz the Corruptor;Kith'ix
-2,9,C'Thun Warlock,60.3,184,9920,"Ritual of Excess;Kith'ix;C'Thun, Eye of the Empire"
-3,9,BFU Handbuff DK,59.7,303,3560,
-4,9,BFU Handbuff DK,59.4,340,6140,
-5,9,Shredslock,59.0,100,6080,Floating Lessons;Zakajz the Corruptor
-6,9,BFU N'Zoth Handbuff DK,58.6,186,6040,"N'Zoth, Dream's End"
-7,9,C'Thun Warlock,58.5,164,12400,"Kith'ix;M.O.T.H.E.R.;C'Thun, Eye of the Empire"
-8,9,Shredslock,58.4,101,9280,Floating Lessons;Zakajz the Corruptor;Kith'ix
-9,9,Zoolock,58.3,1163,9400,"Floating Lessons;Zakajz the Corruptor;Kith'ix;C'Thun, Eye of the Empire"
-10,9,Shredslock,57.7,468,6080,Floating Lessons;Zakajz the Corruptor
-12,9,C'Thun DH,57.4,115,5920,"Frontline Ironborn;Tentacle Lash;C'Thun, Eye of the Empire"
-13,9,Zee C'Thun Shaman,57.3,3195,10920,"C'Thun, Eye of the Empire"
-14,9,Shredslock,57.1,417,4660,Floating Lessons
-15,9,Shredslock,57.0,2953,6160,Floating Lessons;Zakajz the Corruptor
-16,9,Zoolock,56.9,4076,6280,Floating Lessons;Zakajz the Corruptor
-17,9,BFU Handbuff DK,56.5,1077,6040,
-18,9,Shredslock,56.0,234,7720,Floating Lessons;Zakajz the Corruptor;Kith'ix
-19,10,Shredslock,55.8,197,4360,Floating Lessons
-20,10,C'Thun DH,55.2,507,9800,"Frontline Ironborn;Tentacle Lash;C'Thun, Eye of the Empire"
-21,10,Pure Paladin,55.2,201,9120,"Oathbinder's Aura;Rajh;Amitut, Keeper of Amitus;Halls of Origination"
-22,10,C'Thun DH,55.2,928,7360,"Tentacle Lash;C'Thun, Eye of the Empire"
-23,10,BFU N'Zoth Handbuff DK,55.0,282,6280,"N'Zoth, Dream's End"
-24,10,BFU Handbuff DK,55.0,646,3600,
-25,10,Zoolock,54.9,426,6280,Floating Lessons;Zakajz the Corruptor
-26,10,C'Thun DH,54.9,1142,6800,"Frontline Ironborn;Tentacle Lash;C'Thun, Eye of the Empire"
-27,10,Summoner Mage,54.9,153,11420,Discs of Norgannon;Thaw From Ice;Isiset
-28,10,C'Thun Warlock,54.7,1274,9200,"Kith'ix;C'Thun, Eye of the Empire"
-29,10,Harold C'Thun Warlock,54.3,477,11600,"Ritual of Excess;Kith'ix;C'Thun, Eye of the Empire"
-30,10,C'Thun DH,54.2,1969,7400,"Tentacle Lash;C'Thun, Eye of the Empire"
-31,10,C'Thun DH,54.2,131,5120,"Tentacle Lash;C'Thun, Eye of the Empire"
-32,10,Zoolock,54.0,113,6220,Floating Lessons;Zakajz the Corruptor
-33,10,Shredslock,53.9,191,4720,Floating Lessons
-34,10,Zee C'Thun Shaman,53.8,197,13720,"C'Thun, Eye of the Empire"
-35,10,BFU N'Zoth Handbuff DK,53.7,242,6240,"N'Zoth, Dream's End"
-36,10,Zoolock,53.7,378,6280,Floating Lessons;Zakajz the Corruptor
-37,11,BFU N'Zoth Handbuff DK,53.6,233,7200,"N'Zoth, Dream's End"
-38,11,Thief Priest,53.4,103,5680,
-39,11,Egg Priest,53.3,287,6260,
-40,11,XL Rafaamlock,53.2,111,11660,"Ritual of Excess;Kith'ix;C'Thun, Eye of the Empire"
-41,11,BFU N'Zoth Handbuff DK,52.0,415,7020,"N'Zoth, Dream's End"
-42,11,Mug Shaman,52.0,423,6200,Unnatural Cold
-43,11,Thief Priest,51.9,129,5620,"Dark Deacon;C'Thun, Eye of the Empire"
-44,11,Void C'Thun DH,51.3,1428,10440,"Tentacle Lash;C'Thun, Eye of the Empire"
-45,11,BFU N'Zoth Handbuff DK,50.9,613,6080,"N'Zoth, Dream's End"
-46,12,C'Thun DH,50.8,319,7320,"Tentacle Lash;C'Thun, Eye of the Empire"
-47,12,Void C'Thun DH,50.7,377,11120,"Tentacle Lash;C'Thun, Eye of the Empire"
-48,12,Thief Priest,50.5,303,5680,
-49,12,C'Thun DH,50.0,110,9000,"Tentacle Lash;C'Thun, Eye of the Empire"
+1,,Zoolock,61.0,2092,9200,Floating Lessons;Zakajz the Corruptor;Kith'ix
+2,,C'Thun Warlock,60.3,184,9920,"Ritual of Excess;Kith'ix;C'Thun, Eye of the Empire"
+3,,BFU Handbuff DK,59.7,303,3560,
+4,,BFU Handbuff DK,59.4,340,6140,
+5,,Shredslock,59.0,100,6080,Floating Lessons;Zakajz the Corruptor
+6,,BFU N'Zoth Handbuff DK,58.6,186,6040,"N'Zoth, Dream's End"
+7,,C'Thun Warlock,58.5,164,12400,"Kith'ix;M.O.T.H.E.R.;C'Thun, Eye of the Empire"
+8,,Shredslock,58.4,101,9280,Floating Lessons;Zakajz the Corruptor;Kith'ix
+9,,Zoolock,58.3,1163,9400,"Floating Lessons;Zakajz the Corruptor;Kith'ix;C'Thun, Eye of the Empire"
+10,,Shredslock,57.7,468,6080,Floating Lessons;Zakajz the Corruptor
+12,,C'Thun DH,57.4,115,5920,"Frontline Ironborn;Tentacle Lash;C'Thun, Eye of the Empire"
+13,,Zee C'Thun Shaman,57.3,3195,10920,"C'Thun, Eye of the Empire"
+14,,Shredslock,57.1,417,4660,Floating Lessons
+15,,Shredslock,57.0,2953,6160,Floating Lessons;Zakajz the Corruptor
+16,,Zoolock,56.9,4076,6280,Floating Lessons;Zakajz the Corruptor
+17,,BFU Handbuff DK,56.5,1077,6040,
+18,,Shredslock,56.0,234,7720,Floating Lessons;Zakajz the Corruptor;Kith'ix
+19,,Shredslock,55.8,197,4360,Floating Lessons
+20,,C'Thun DH,55.2,507,9800,"Frontline Ironborn;Tentacle Lash;C'Thun, Eye of the Empire"
+21,,Pure Paladin,55.2,201,9120,"Oathbinder's Aura;Rajh;Amitut, Keeper of Amitus;Halls of Origination"
+22,,C'Thun DH,55.2,928,7360,"Tentacle Lash;C'Thun, Eye of the Empire"
+23,,BFU N'Zoth Handbuff DK,55.0,282,6280,"N'Zoth, Dream's End"
+24,,BFU Handbuff DK,55.0,646,3600,
+25,,Zoolock,54.9,426,6280,Floating Lessons;Zakajz the Corruptor
+26,,C'Thun DH,54.9,1142,6800,"Frontline Ironborn;Tentacle Lash;C'Thun, Eye of the Empire"
+27,,Summoner Mage,54.9,153,11420,Discs of Norgannon;Thaw From Ice;Isiset
+28,,C'Thun Warlock,54.7,1274,9200,"Kith'ix;C'Thun, Eye of the Empire"
+29,,Harold C'Thun Warlock,54.3,477,11600,"Ritual of Excess;Kith'ix;C'Thun, Eye of the Empire"
+30,,C'Thun DH,54.2,1969,7400,"Tentacle Lash;C'Thun, Eye of the Empire"
+31,,C'Thun DH,54.2,131,5120,"Tentacle Lash;C'Thun, Eye of the Empire"
+32,,Zoolock,54.0,113,6220,Floating Lessons;Zakajz the Corruptor
+33,,Shredslock,53.9,191,4720,Floating Lessons
+34,,Zee C'Thun Shaman,53.8,197,13720,"C'Thun, Eye of the Empire"
+35,,BFU N'Zoth Handbuff DK,53.7,242,6240,"N'Zoth, Dream's End"
+36,,Zoolock,53.7,378,6280,Floating Lessons;Zakajz the Corruptor
+37,,BFU N'Zoth Handbuff DK,53.6,233,7200,"N'Zoth, Dream's End"
+38,,Thief Priest,53.4,103,5680,
+39,,Egg Priest,53.3,287,6260,
+40,,XL Rafaamlock,53.2,111,11660,"Ritual of Excess;Kith'ix;C'Thun, Eye of the Empire"
+41,,BFU N'Zoth Handbuff DK,52.0,415,7020,"N'Zoth, Dream's End"
+42,,Mug Shaman,52.0,423,6200,Unnatural Cold
+43,,Thief Priest,51.9,129,5620,"Dark Deacon;C'Thun, Eye of the Empire"
+44,,Void C'Thun DH,51.3,1428,10440,"Tentacle Lash;C'Thun, Eye of the Empire"
+45,,BFU N'Zoth Handbuff DK,50.9,613,6080,"N'Zoth, Dream's End"
+46,,C'Thun DH,50.8,319,7320,"Tentacle Lash;C'Thun, Eye of the Empire"
+47,,Void C'Thun DH,50.7,377,11120,"Tentacle Lash;C'Thun, Eye of the Empire"
+48,,Thief Priest,50.5,303,5680,
+49,,C'Thun DH,50.0,110,9000,"Tentacle Lash;C'Thun, Eye of the Empire"
