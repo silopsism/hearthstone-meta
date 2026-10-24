@@ -6,7 +6,7 @@ Weight per list = games * (winrate - 50).
 
 Usage: python tools/infographic/build_census.py <path to HearthstoneJSON cards_all.json>
 """
-import base64, csv, json, os, statistics, sys
+import base64, csv, json, os, re, statistics, sys
 from collections import defaultdict
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -40,18 +40,30 @@ for r in csv.DictReader(open(os.path.join(PROJ, "data", "lists_2026-10-24.csv"),
     lists.append({"id": r["deck"], "level": r["level"], "arch": r["archetype"], "wr": wr, "games": g,
                   "dust": int(r["dust"]), "w": g * max(wr - 50, 0), "cards": [x for x in r["cards"].split(";") if x]})
 
+def free_reason(c):
+    """Why a collectible card costs no dust, or None. Golden-only rewards don't count."""
+    if c.get("set") == "CORE":
+        return "Core set: free for every player"
+    if c.get("howToEarn"):
+        return re.sub(r"</?i>", "", c["howToEarn"])
+    if c.get("set") in FREE_SETS:
+        return "Event reward"
+    return None
+
+
 cards = {}
 for L in lists:
     for n in L["cards"]:
         c = by_name[n]
         cards[n] = {"id": c["id"], "rarity": c.get("rarity") or "FREE", "set": c.get("set"),
                     "setName": SET_NAMES.get(c.get("set"), (c.get("set") or "").replace("_", " ").title()),
-                    "cls": c.get("cardClass"), "cost": c.get("cost"), "collectible": bool(c.get("collectible"))}
+                    "cls": c.get("cardClass"), "cost": c.get("cost"), "collectible": bool(c.get("collectible")),
+                    "free": free_reason(c) if c.get("collectible") else None}
 
 
 def craftable(n):
     c = cards[n]
-    return c["collectible"] and c["rarity"] in ("EPIC", "LEGENDARY") and c["set"] not in FREE_SETS
+    return c["collectible"] and c["rarity"] in ("EPIC", "LEGENDARY") and not c["free"]
 
 
 def dust_of(n):
@@ -102,7 +114,10 @@ for c in be_all:
     best = max((d["share"] for d in decks), default=0)
     score = 100 * w / total_w
     strong_core = score >= 5 and any(d["share"] >= CORE and d["of"] >= 3 and d["wr"] >= 56 for d in decks)
-    if n in TRAP:
+    free = free_reason(by_name[n])
+    if free:
+        verdict = "free"
+    elif n in TRAP:
         verdict = "skip"
     elif strong_core:
         verdict = "craft"
@@ -116,12 +131,13 @@ for c in be_all:
         verdict = "unplayed"
     be_out.append({"name": n, "rarity": c["rarity"], "cls": c["cls"], "dust": dust_of(n) if n in cards else DUST[c["rarity"]] * (1 if c["rarity"] == "LEGENDARY" else 2),
                    "lists": sum(1 for x in lists if n in x["cards"]), "score": round(score, 1),
-                   "verdict": verdict, "trap": TRAP.get(n), "decks": decks})
+                   "verdict": verdict, "trap": TRAP.get(n), "free": free, "decks": decks})
 be_out.sort(key=lambda b: -b["score"])
 
 for c in be_all:  # tiles for unplayed cards too
     cards.setdefault(c["name"], {"id": c["id"], "rarity": c["rarity"], "set": "BE", "setName": "Black Empire",
-                                 "cls": c["cls"], "cost": c["cost"], "collectible": True})
+                                 "cls": c["cls"], "cost": c["cost"], "collectible": True,
+                                 "free": free_reason(by_name[c["name"]])})
 
 data = {"cards": cards, "archetypes": arch_out, "be": be_out,
         "totals": {"lists": len(lists), "games": sum(x["games"] for x in lists),

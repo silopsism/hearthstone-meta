@@ -26,6 +26,7 @@
   --niche: #c79bf2;
   --skip: #f06b5c;
   --wait: #9a8cae;
+  --free: #5fd4c0;
   --f-display: "Cinzel", "Trajan Pro", Georgia, serif;
   --f-body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
   --f-data: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
@@ -66,7 +67,7 @@ section { display: grid; gap: 20px; }
   height: 34px; min-width: 0; border-radius: 3px; overflow: hidden;
   background: #1a1220; box-shadow: inset 5px 0 0 var(--rar); padding-left: 5px;
 }
-.tile.r-leg, .tile.r-epic { outline: 1px solid var(--rar); outline-offset: -1px; }
+.tile.r-leg, .tile.r-epic, .tile.r-free { outline: 1px solid var(--rar); outline-offset: -1px; }
 .tile::before {
   content: ""; position: absolute; inset: 0 0 0 auto; width: 148px;
   background: var(--art) right center / auto 100% no-repeat;
@@ -200,6 +201,7 @@ section { display: grid; gap: 20px; }
       <span><b class="num" style="color:var(--legendary)">5k</b> Top 5k legend list</span>
       <span><i class="rar-badge" style="--rar:var(--legendary);padding:2px 5px;font-size:.6rem">Leg</i> Legendary, 1,600 dust</span>
       <span><i class="rar-badge" style="--rar:var(--epic);padding:2px 5px;font-size:.6rem">Epic</i> Epic, 400 dust each</span>
+      <span><i class="rar-badge" style="--rar:var(--free);padding:2px 5px;font-size:.6rem">Free</i> Free epic or legendary, no dust</span>
       <span><i class="sw" style="background:var(--rare);transform:rotate(45deg);width:9px;height:9px"></i>Rare</span>
       <span><i class="sw" style="background:var(--common);transform:rotate(45deg);width:9px;height:9px"></i>Common or free</span>
       <span><i>Italic</i> = bonus card that comes with a Fabled legendary</span>
@@ -220,7 +222,7 @@ section { display: grid; gap: 20px; }
     <p><strong>Source.</strong> HSGuru deck stats for Standard with post-ban filters, minimum 100 games per list, read from screenshots on 24 Oct 2026: <span id="m-lists"></span>. Card data and art from HearthstoneJSON.</p>
     <p><strong>Shares.</strong> Every list is weighted by games × (win rate − 50), so a 6,000-game list at 63% counts far more than a 100-game list at 58%. A card is core in a deck at 80% share or more, and flex from 30% to 80%.</p>
     <p><strong>Verdicts.</strong> Craft = core in a deck with at least three lists, a 56%+ win rate, and at least 5% of the meta weight. One deck = core somewhere smaller. Optional = flex at best. Wait = barely played. Skip = played, but the deck that uses it is beaten by a same-class version without it.</p>
-    <p><strong>"Also needs"</strong> lists the other epics and legendaries that are core in that deck, excluding free Core-set cards and Fabled bonus cards. Dust assumes one copy of a legendary (1,600) and two of an epic (2 × 400).</p>
+    <p><strong>"Also needs"</strong> lists the other epics and legendaries that are core in that deck and cost dust. Free cards are left out: the Core set, event cards, reward-track cards and cards granted for opening packs or finishing the starter quests, all marked FREE. Cards that are free only in golden still count as crafts, and Fabled bonus cards come with their legendary. Dust assumes one copy of a legendary (1,600) and two of an epic (2 × 400).</p>
     <p><strong>Limits.</strong> The set is four days old and these are HSGuru's top-performing lists, not every deck played. Card names were read by eye from screenshots. One Top 5k Void C'Thun DH list was left out because its win rate was cut off.</p>
   </footer>
 </div>
@@ -239,7 +241,8 @@ const RARITY = {
   EPIC: { cls: "r-epic", tag: "Epic", label: "Epic", color: "var(--epic)" },
   RARE: { cls: "r-rare", label: "Rare", color: "var(--rare)" },
   COMMON: { cls: "r-common", label: "Common", color: "var(--common)" },
-  FREE: { cls: "r-common", label: "Free", color: "var(--common)" }
+  FREE: { cls: "r-common", label: "Free", color: "var(--common)" },
+  FREE_EL: { cls: "r-free", tag: "Free", label: "Free", color: "var(--free)" }
 };
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 function needsSummary(names) {
@@ -251,6 +254,7 @@ const VERDICTS = [
   ["optional", "Flex picks", "Some versions of a deck run it, but you can build the deck without it."],
   ["niche", "Only if you play that deck", "Core in a deck that is small or fringe right now."],
   ["skip", "Played, but skip it", "The deck that runs it loses to a same-class version without it."],
+  ["free", "Free, no dust needed", "Black Empire cards every player gets without crafting."],
   ["wait", "Barely played", "Seen in one or two lists and not core anywhere."]
 ];
 
@@ -263,14 +267,17 @@ const clsColor = a => CLASS[A[a]?.cls] || CLASS.Neutral;
 
 function tile(name, opts = {}) {
   const c = DATA.cards[name];
-  const r = RARITY[c.rarity] || RARITY.COMMON;
+  const expensive = c.rarity === "LEGENDARY" || c.rarity === "EPIC";
+  const r = c.free && expensive ? RARITY.FREE_EL : (RARITY[c.rarity] || RARITY.COMMON);
   const cls = ["tile", r.cls, opts.sm ? "sm" : "", opts.bench ? "bench" : "", c.collectible ? "" : "bonus"].filter(Boolean).join(" ");
   const mark = r.tag ? `<span class="rp">${r.tag}</span>` : `<span class="gem" aria-label="${r.label}"></span>`;
   const art = DATA.tiles?.[c.id] || `tiles/${c.id}.webp`;
-  return `<div class="${cls}" style="--art:url('${art}');--rar:${r.color}" title="${esc(name)} · ${r.label} · ${esc(c.setName)}">` +
+  return `<div class="${cls}" style="--art:url('${art}');--rar:${r.color}" title="${esc(name)} · ${c.free ? esc(c.free) : r.label + " · " + esc(c.setName)}">` +
     `<span class="cost">${c.cost ?? ""}</span><span class="name">${esc(name)}</span>${mark}</div>`;
 }
-const rarityBadge = b => b.rarity === "LEGENDARY"
+const rarityBadge = b => b.free
+  ? `<span class="rar-badge" style="--rar:var(--free)">Free ${b.rarity === "LEGENDARY" ? "legendary" : "epic"} · <b>0</b> dust</span><p class="muted" style="font-size:.84rem">${esc(b.free)}</p>`
+  : b.rarity === "LEGENDARY"
   ? `<span class="rar-badge" style="--rar:var(--legendary)">Legendary · <b>${fmt(b.dust)}</b> dust</span>`
   : `<span class="rar-badge" style="--rar:var(--epic)">Epic · <b>${fmt(b.dust)}</b> dust for 2</span>`;
 
