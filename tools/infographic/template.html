@@ -5,8 +5,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
 <style>
-/* Layout: a crafting ledger on a deck-tracker void. Ranked card entries, each listing the decks
-   it slots into and what else those decks need; then one heat map per deck (cards x lists). */
+/* Layout: a crafting ledger on a deck-tracker void. Tier list up top, then ranked card entries
+   with the decks they pair with, a per-class board, the ladder chart, and one heat map per deck. */
 :root {
   --void: #120d17;
   --panel: #1b1423;
@@ -40,7 +40,7 @@ body {
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: 40px 64px;
 }
-.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 56px; }
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 64px; }
 h1, h2 { font-family: var(--f-display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: .02em; }
 h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.05; }
 h2 { font-size: clamp(1.3rem, 2.6vw, 1.75rem); }
@@ -51,7 +51,7 @@ a:focus-visible, summary:focus-visible { outline: 2px solid var(--legendary); ou
 .lede { color: var(--mute); font-size: 1.12rem; max-width: 64ch; }
 .muted { color: var(--mute); }
 .num { font-family: var(--f-data); font-variant-numeric: tabular-nums; }
-section { display: grid; gap: 20px; }
+section { display: grid; gap: 20px; scroll-margin-top: 16px; }
 .sec-head { display: grid; gap: 6px; }
 .sec-head p { color: var(--mute); max-width: 70ch; }
 
@@ -60,6 +60,9 @@ section { display: grid; gap: 20px; }
 .stat { display: grid; gap: 2px; }
 .stat b { font: 600 2rem/1 var(--f-data); font-variant-numeric: tabular-nums; }
 .stat span { color: var(--mute); font-size: .9rem; }
+.jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.jump a { text-decoration: none; color: var(--ink); font-size: .88rem; padding: 6px 12px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); }
+.jump a:hover { border-color: var(--legendary); }
 
 /* card banner, drawn like a deck-tracker row */
 .tile {
@@ -94,20 +97,37 @@ section { display: grid; gap: 20px; }
 .tile.sm .gem { width: 7px; height: 7px; margin-right: 8px; }
 .tile.bench::before { filter: grayscale(1) brightness(.55); }
 .tile.bench .name, .tile.bench .cost { opacity: .7; }
+.tile.bonus .name { font-style: italic; font-weight: 500; }
+a.tile-link { display: block; text-decoration: none; }
+a.tile-link:hover .tile { filter: brightness(1.15); }
 .rar-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; border-radius: 3px; background: var(--rar); color: #160f1b; font: 800 .74rem/1 var(--f-body); letter-spacing: .06em; text-transform: uppercase; }
 .rar-badge b { font-family: var(--f-data); font-weight: 600; letter-spacing: 0; color: inherit; }
-.tile.bonus .name { font-style: italic; font-weight: 500; }
+
+/* class-coloured deck banner */
+.deck-chip { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 3px; background: var(--cc); color: var(--cc-ink); font: 700 .95rem/1.2 var(--f-body); }
+.deck-chip small { font: 600 .66rem/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; opacity: .8; }
+
+/* tier list */
+.tiers { display: grid; gap: 14px; }
+.tier { display: grid; grid-template-columns: 128px 1fr; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: var(--panel); }
+.tier-label { display: grid; align-content: center; gap: 4px; padding: 14px; border-right: 1px solid var(--rule); box-shadow: inset 4px 0 0 var(--vc); }
+.tier-label strong { font: 700 1.2rem/1.1 var(--f-display); letter-spacing: .04em; color: var(--vc); }
+.tier-label span { font-size: .8rem; color: var(--mute); line-height: 1.3; }
+.tier-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px 18px; padding: 14px; }
+.tcard { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.tcard .meta { display: flex; gap: 12px; font-size: .8rem; color: var(--mute); }
+.tcard .meta b { color: var(--ink); font-family: var(--f-data); font-weight: 600; }
+.tcard p { font-size: .9rem; color: var(--mute); line-height: 1.4; }
 
 /* craft list */
 .group { display: grid; gap: 14px; }
 .group-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--rule); padding-bottom: 8px; }
 .group-head h3 { margin: 0; font: 700 1.15rem/1.2 var(--f-display); letter-spacing: .04em; color: var(--vc); }
 .group-head p { color: var(--mute); font-size: .92rem; }
-.pick { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 18px; background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 16px; box-shadow: inset 3px 0 0 var(--vc); }
+.pick { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 18px; background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 16px; box-shadow: inset 3px 0 0 var(--vc); scroll-margin-top: 16px; }
 .pick-head { display: grid; gap: 10px; align-content: start; min-width: 0; }
 .pick-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .84rem; color: var(--mute); align-items: center; }
 .pick-meta b { color: var(--ink); font-family: var(--f-data); font-weight: 600; }
-.dust b { color: var(--dust); }
 .chip { font: 700 .66rem/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; padding: 4px 6px; border-radius: 3px; border: 1px solid currentColor; color: var(--vc); }
 .weight { display: grid; gap: 4px; font-size: .78rem; color: var(--mute); }
 .weight .track { height: 6px; background: var(--panel-2); border-radius: 3px; overflow: hidden; }
@@ -115,9 +135,7 @@ section { display: grid; gap: 20px; }
 .pairs { display: grid; gap: 12px; min-width: 0; }
 .pair { display: grid; gap: 6px; padding-bottom: 12px; border-bottom: 1px dashed var(--rule); }
 .pair:last-child { border-bottom: 0; padding-bottom: 0; }
-.pair-top { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
-.pair-top b { font-size: 1rem; }
-.dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--cc); margin-right: 6px; vertical-align: 0; }
+.pair-top { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
 .role { font: 700 .72rem/1 var(--f-body); letter-spacing: .06em; text-transform: uppercase; }
 .role.core { color: var(--craft); } .role.flex { color: var(--optional); }
 .pair-top .num { font-size: .8rem; color: var(--mute); }
@@ -133,18 +151,54 @@ section { display: grid; gap: 20px; }
 .minis { display: flex; flex-wrap: wrap; gap: 6px; }
 .minis .tile { width: 196px; }
 
+/* where each card is played */
+.board { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(440px, 100%), 1fr)); gap: 18px; align-items: start; }
+.cls { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; min-width: 0; }
+.cls-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 9px 12px; background: var(--cc); color: var(--cc-ink); font: 700 1rem/1.2 var(--f-display); letter-spacing: .04em; }
+.cls-head span { font: 500 .8rem/1 var(--f-body); opacity: .85; letter-spacing: 0; }
+.arch { padding: 12px; display: grid; gap: 8px; border-top: 1px solid var(--rule); }
+.arch:first-of-type { border-top: 0; }
+.arch-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.arch-wr { display: flex; gap: 10px; font: 400 .78rem/1.2 var(--f-data); color: var(--mute); font-variant-numeric: tabular-nums; }
+.arch-wr b { color: var(--ink); font-weight: 600; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) 84px 54px; gap: 8px; align-items: center; }
+.bars { display: grid; gap: 3px; }
+.bar { position: relative; height: 7px; background: var(--panel-2); border-radius: 2px; overflow: hidden; }
+.bar i { position: absolute; inset: 0 auto 0 0; border-radius: 2px; }
+.bar.d4 i { background: var(--mute); }
+.bar.t5k i { background: var(--legendary); }
+.bar.na { background: repeating-linear-gradient(90deg, var(--panel-2) 0 3px, transparent 3px 6px); }
+.tchip { justify-self: end; font: 700 .64rem/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; padding: 4px 6px; border-radius: 3px; border: 1px solid currentColor; }
+.tchip.core { color: var(--craft); } .tchip.flex { color: var(--optional); } .tchip.fringe { color: var(--wait); } .tchip.trap { color: var(--skip); } .tchip.free { color: var(--free); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: .85rem; color: var(--mute); align-items: center; }
+.legend .sw { display: inline-block; width: 22px; height: 7px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+
+/* ladder chart + trap */
+.split { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.panel h3 { margin: 0; font: 700 1.05rem/1.25 var(--f-body); }
+.panel p { color: var(--mute); font-size: .92rem; }
+.chart { overflow-x: auto; }
+.chart svg { display: block; width: 100%; min-width: 440px; height: auto; }
+.duel { display: grid; gap: 10px; }
+.duel-row { display: grid; grid-template-columns: 76px 1fr; gap: 10px; align-items: center; font-size: .82rem; color: var(--mute); }
+.duel-bars { display: grid; gap: 4px; }
+.dbar { display: flex; align-items: center; gap: 8px; font: 600 .8rem/1 var(--f-data); }
+.dbar i { display: block; height: 14px; border-radius: 2px; }
+
 /* deck heat maps */
-.deck { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.deck { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; scroll-margin-top: 16px; }
 .deck + .deck { margin-top: 12px; }
-.deck summary { list-style: none; cursor: pointer; display: grid; gap: 10px; padding: 14px 16px; box-shadow: inset 4px 0 0 var(--cc); }
+.deck summary { list-style: none; cursor: pointer; display: grid; gap: 10px; padding: 14px 16px; background: var(--cc); color: var(--cc-ink); }
 .deck summary::-webkit-details-marker { display: none; }
 .deck-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
-.deck-title h3 { margin: 0; font: 700 1.1rem/1.2 var(--f-body); }
-.deck-title h3::after { content: " ▸"; color: var(--faint); font-size: .8em; }
+.deck-title h3 { margin: 0; font: 700 1.15rem/1.2 var(--f-display); letter-spacing: .03em; }
+.deck-title h3::after { content: " ▸"; opacity: .7; font-size: .8em; }
 .deck[open] .deck-title h3::after { content: " ▾"; }
-.deck-title span { font: 400 .8rem/1.2 var(--f-data); color: var(--mute); font-variant-numeric: tabular-nums; }
-.deck-title span b { color: var(--ink); font-weight: 600; }
-.hm-wrap { overflow-x: auto; padding: 0 16px 16px; }
+.deck-title span { font: 400 .8rem/1.2 var(--f-data); font-variant-numeric: tabular-nums; opacity: .85; }
+.deck-title span b { font-weight: 600; opacity: 1; }
+.deck-cls { font: 700 .66rem/1 var(--f-body) !important; letter-spacing: .12em; text-transform: uppercase; }
+.hm-wrap { overflow-x: auto; padding: 14px 16px 16px; }
 .hm { border-collapse: separate; border-spacing: 2px; font-size: .74rem; }
 .hm th, .hm td { padding: 0; }
 .hm thead th { font: 400 .62rem/1 var(--f-data); color: var(--faint); vertical-align: bottom; }
@@ -170,6 +224,13 @@ section { display: grid; gap: 20px; }
 @media (max-width: 760px) {
   .pick { grid-template-columns: 1fr; }
   .needs .tile, .minis .tile { width: 100%; max-width: 260px; }
+  .tier { grid-template-columns: 1fr; }
+  .tier-label { border-right: 0; border-bottom: 1px solid var(--rule); grid-auto-flow: column; justify-content: start; align-items: baseline; gap: 12px; }
+  .board { grid-template-columns: 1fr; }
+  .split { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bar i, .dbar i { transition: width .6s ease; }
 }
 </style>
 
@@ -179,7 +240,19 @@ section { display: grid; gap: 20px; }
     <h1>Black Empire Card Census</h1>
     <p class="lede">Which of the set's epics and legendaries are worth your dust. Each card shows the decks it goes into, how central it is to them, and which other epics and legendaries you need to own before it's any use.</p>
     <div class="stats" id="stats"></div>
+    <nav class="jump" aria-label="Sections">
+      <a href="#tiers">Tier list</a><a href="#crafts">Craft list</a><a href="#by-class">By class</a><a href="#ladder">Up the ladder</a><a href="#decks">Deck heat maps</a><a href="#bench">Bench</a>
+    </nav>
   </header>
+
+  <section id="tiers">
+    <div class="sec-head">
+      <p class="eyebrow">The verdict</p>
+      <h2>Tier list</h2>
+      <p>Every Black Empire epic and legendary that appears in a winning list, sorted by what it's worth crafting. List counts are Diamond 4-1 / Top 5k. Click a card to see what it pairs with.</p>
+    </div>
+    <div class="tiers" id="tier-rows"></div>
+  </section>
 
   <section id="crafts">
     <div class="sec-head">
@@ -188,6 +261,39 @@ section { display: grid; gap: 20px; }
       <p>Each archetype is treated as one deck, and its HSGuru lists as variants of it. A card's share is how much of that deck's weighted play includes it, where each list counts for games × (win rate − 50). Meta weight is the same measure across every deck at once.</p>
     </div>
     <div id="groups" class="group" style="gap:40px"></div>
+  </section>
+
+  <section id="by-class">
+    <div class="sec-head">
+      <p class="eyebrow">By archetype</p>
+      <h2>Where each card is played</h2>
+      <p>Each bar is the card's weighted share of that archetype's lists at one level. A hatched bar means the archetype had no qualifying lists at that level.</p>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--mute)"></i>Diamond 4-1</span>
+      <span><i class="sw" style="background:var(--legendary)"></i>Top 5k legend</span>
+      <span>Win rates are game-weighted averages of the archetype's lists.</span>
+    </div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section id="ladder">
+    <div class="sec-head">
+      <p class="eyebrow">Moving up the ladder</p>
+      <h2>What holds up against better players</h2>
+    </div>
+    <div class="split">
+      <div class="panel">
+        <h3>Archetype win rate, Diamond 4-1 → Top 5k</h3>
+        <p>Every deck loses ground at the higher level. Aggro Warlock stays on top; C'Thun DH, the most-played deck, drops furthest.</p>
+        <div class="chart" id="slope"></div>
+      </div>
+      <div class="panel">
+        <h3>The N'Zoth trap</h3>
+        <p>N'Zoth, Dream's End is the card that turns Handbuff DK into N'Zoth Handbuff DK. The version without it, which needs no Black Empire epics or legendaries at all, wins more at both levels.</p>
+        <div class="duel" id="duel"></div>
+      </div>
+    </div>
   </section>
 
   <section id="decks">
@@ -209,17 +315,17 @@ section { display: grid; gap: 20px; }
     <div id="heatmaps"></div>
   </section>
 
-  <section>
+  <section id="bench">
     <div class="sec-head">
       <p class="eyebrow">On the bench</p>
       <h2>Not in a single list</h2>
       <p id="bench-lede"></p>
     </div>
-    <div class="bench-grid" id="bench"></div>
+    <div class="bench-grid" id="bench-grid"></div>
   </section>
 
   <footer class="method">
-    <p><strong>Source.</strong> HSGuru deck stats for Standard with post-ban filters, minimum 100 games per list, read from screenshots on 24 Oct 2026: <span id="m-lists"></span>. Card data and art from HearthstoneJSON.</p>
+    <p><strong>Source.</strong> HSGuru deck and archetype stats for Standard with post-ban filters, minimum 100 games per list, read from screenshots on 24 Oct 2026: <span id="m-lists"></span>. Card data and art from HearthstoneJSON.</p>
     <p><strong>Shares.</strong> Every list is weighted by games × (win rate − 50), so a 6,000-game list at 63% counts far more than a 100-game list at 58%. A card is core in a deck at 80% share or more, and flex from 30% to 80%.</p>
     <p><strong>Verdicts.</strong> Craft = core in a deck with at least three lists, a 56%+ win rate, and at least 5% of the meta weight. One deck = core somewhere smaller. Optional = flex at best. Wait = barely played. Skip = played, but the deck that uses it is beaten by a same-class version without it.</p>
     <p><strong>"Also needs"</strong> lists the other epics and legendaries that are core in that deck and cost dust. Free cards are left out: the Core set, event cards, reward-track cards and cards granted for opening packs or finishing the starter quests, all marked FREE. Cards that are free only in golden still count as crafts, and Fabled bonus cards come with their legendary. Dust assumes one copy of a legendary (1,600) and two of an epic (2 × 400).</p>
@@ -230,9 +336,10 @@ section { display: grid; gap: 20px; }
 <script>
 const DATA = /*__DATA__*/null;
 const CLASS = {
-  "Warlock": "#a46cae", "Demon Hunter": "#4f8f47", "Shaman": "#4f74c6", "Death Knight": "#6c5fa8",
-  "Paladin": "#d9bc2c", "Priest": "#c9c5cf", "Rogue": "#8a8a8f", "Warrior": "#b8322b",
-  "Mage": "#5fc2dc", "Druid": "#e8931e", "Hunter": "#5f9b3c", "Neutral": "#7d7486"
+  "Warlock": ["#a46cae", "#1a0f1f"], "Demon Hunter": ["#3f7a3a", "#f3f7ee"], "Shaman": ["#4f74c6", "#f2f5ff"],
+  "Death Knight": ["#6c5fa8", "#f4f1ff"], "Paladin": ["#e1c432", "#2a2306"], "Priest": ["#d4d0d8", "#1d1a22"],
+  "Rogue": ["#8a8a8f", "#141416"], "Warrior": ["#b8322b", "#fff1ef"], "Mage": ["#5fc2dc", "#08262e"],
+  "Druid": ["#e8931e", "#2a1702"], "Hunter": ["#5f9b3c", "#f1f8ec"], "Neutral": ["#7d7486", "#f5f2f7"]
 };
 const CLS_NAME = { DEATHKNIGHT: "Death Knight", DEMONHUNTER: "Demon Hunter", DRUID: "Druid", HUNTER: "Hunter", MAGE: "Mage",
   NEUTRAL: "Neutral", PALADIN: "Paladin", PRIEST: "Priest", ROGUE: "Rogue", SHAMAN: "Shaman", WARLOCK: "Warlock", WARRIOR: "Warrior" };
@@ -244,26 +351,48 @@ const RARITY = {
   FREE: { cls: "r-common", label: "Free", color: "var(--common)" },
   FREE_EL: { cls: "r-free", tag: "Free", label: "Free", color: "var(--free)" }
 };
-const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
-function needsSummary(names) {
-  const leg = names.filter(n => DATA.cards[n].rarity === "LEGENDARY").length, epic = names.length - leg;
-  return [leg && plural(leg, "legendary", "legendaries"), epic && plural(epic, "epic", "epics")].filter(Boolean).join(", ");
-}
 const VERDICTS = [
-  ["craft", "Craft these first", "Core in at least one strong, popular deck."],
-  ["optional", "Flex picks", "Some versions of a deck run it, but you can build the deck without it."],
-  ["niche", "Only if you play that deck", "Core in a deck that is small or fringe right now."],
-  ["skip", "Played, but skip it", "The deck that runs it loses to a same-class version without it."],
-  ["free", "Free, no dust needed", "Black Empire cards every player gets without crafting."],
-  ["wait", "Barely played", "Seen in one or two lists and not core anywhere."]
+  ["craft", "Craft these first", "Craft", "Core in a top deck", "Core in at least one strong, popular deck."],
+  ["optional", "Flex picks", "Flex", "Depends on the build", "Some versions of a deck run it, but you can build the deck without it."],
+  ["niche", "Only if you play that deck", "One deck", "Small or fringe deck", "Core in a deck that is small or fringe right now."],
+  ["skip", "Played, but skip it", "Skip", "Costs win rate", "The deck that runs it loses to a same-class version without it."],
+  ["free", "Free, no dust needed", "Free", "No dust needed", "Black Empire cards every player gets without crafting."],
+  ["wait", "Barely played", "Wait", "One or two lists", "Seen in one or two lists and not core anywhere."]
 ];
+const NOTES = {
+  "C'Thun, Eye of the Empire": "Core in all five C'Thun archetypes, across Demon Hunter, Shaman and Warlock.",
+  "Floating Lessons": "In every Zoolock list and all but one Shredslock list, the two best decks.",
+  "Zakajz the Corruptor": "Core in Zoolock and Shredslock at both levels. Lists without it are small experiments.",
+  "Tentacle Lash": "In every C'Thun DH and Void C'Thun DH list at both levels.",
+  "Kith'ix": "Core in C'Thun and Harold Warlock. Optional in aggro Warlock.",
+  "Frontline Ironborn": "In 12 of 23 C'Thun DH lists, with little effect on win rate either way.",
+  "N'Zoth, Dream's End": "Defines N'Zoth Handbuff DK, yet plain Handbuff DK without it wins 3–4 points more at both levels.",
+  "Ritual of Excess": "Core in Harold Warlock and XL Rafaamlock, both mid-50s decks.",
+  "Rajh": "Part of Pure Paladin's package with Amitut and Halls. Paladin sits near 55%.",
+  "Amitut, Keeper of Amitus": "In every Paladin list but one.",
+  "Halls of Origination": "Travels with Rajh and Amitut in Pure Paladin.",
+  "Oathbinder's Aura": "In half the Paladin lists.",
+  "Mastermind Yogg-Saron": "Core in AYAYA Rogue, a 54% deck. Also in one Holy Paladin list.",
+  "M.O.T.H.E.R.": "Free from the starter quests. In three Warlock lists, 52.5% to 58.5%.",
+  "Archaedas": "Free on the reward track. One Egg Warrior list, 57.6% over 158 games.",
+  "Discs of Norgannon": "One Summoner Mage list at Top 5k: 54.9% over 153 games.",
+  "Isiset": "Same Summoner Mage list as Discs and Thaw From Ice.",
+  "Thaw From Ice": "Same Summoner Mage list as Discs and Isiset.",
+  "Neptulon, Lord of Tides": "One Zee C'Thun Shaman list, 65.4% over 130 games.",
+  "Unnatural Cold": "One Mug Shaman list at Top 5k, 52.0%.",
+  "Dark Deacon": "One Thief Priest list at Top 5k, 51.9%."
+};
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const fmt = n => n.toLocaleString("en-GB");
 const pct = x => `${Math.round(x * 100)}%`;
-const slug = s => "deck-" + s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-const A = DATA.archetypes;
-const clsColor = a => CLASS[A[a]?.cls] || CLASS.Neutral;
+const slug = (p, s) => p + "-" + s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const A = DATA.archetypes, L = DATA.levels;
+const clsOfArch = a => A[a]?.cls || A["BFU " + a]?.cls ||
+  (/DK$/.test(a) ? "Death Knight" : /DH$/.test(a) ? "Demon Hunter" : /lock$|Warlock$/.test(a) ? "Warlock" :
+   ["Shaman", "Priest", "Paladin", "Warrior", "Mage", "Rogue", "Druid", "Hunter"].find(c => a.includes(c)) || "Neutral");
+const ccStyle = cls => { const [bg, ink] = CLASS[cls] || CLASS.Neutral; return `--cc:${bg};--cc-ink:${ink}`; };
+const deckChip = a => `<span class="deck-chip" style="${ccStyle(clsOfArch(a))}">${esc(a)}</span>`;
 
 function tile(name, opts = {}) {
   const c = DATA.cards[name];
@@ -275,11 +404,16 @@ function tile(name, opts = {}) {
   return `<div class="${cls}" style="--art:url('${art}');--rar:${r.color}" title="${esc(name)} · ${c.free ? esc(c.free) : r.label + " · " + esc(c.setName)}">` +
     `<span class="cost">${c.cost ?? ""}</span><span class="name">${esc(name)}</span>${mark}</div>`;
 }
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+function needsSummary(names) {
+  const leg = names.filter(n => DATA.cards[n].rarity === "LEGENDARY").length, epic = names.length - leg;
+  return [leg && plural(leg, "legendary", "legendaries"), epic && plural(epic, "epic", "epics")].filter(Boolean).join(", ");
+}
 const rarityBadge = b => b.free
   ? `<span class="rar-badge" style="--rar:var(--free)">Free ${b.rarity === "LEGENDARY" ? "legendary" : "epic"} · <b>0</b> dust</span><p class="muted" style="font-size:.84rem">${esc(b.free)}</p>`
   : b.rarity === "LEGENDARY"
-  ? `<span class="rar-badge" style="--rar:var(--legendary)">Legendary · <b>${fmt(b.dust)}</b> dust</span>`
-  : `<span class="rar-badge" style="--rar:var(--epic)">Epic · <b>${fmt(b.dust)}</b> dust for 2</span>`;
+    ? `<span class="rar-badge" style="--rar:var(--legendary)">Legendary · <b>${fmt(b.dust)}</b> dust</span>`
+    : `<span class="rar-badge" style="--rar:var(--epic)">Epic · <b>${fmt(b.dust)}</b> dust for 2</span>`;
 
 // hero
 const played = DATA.be.filter(b => b.verdict !== "unplayed");
@@ -291,9 +425,19 @@ document.getElementById("stats").innerHTML = [
   [fmt(DATA.totals.games), "games behind them"]
 ].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
 
+// tier list
+document.getElementById("tier-rows").innerHTML = VERDICTS.map(([v, , label, sub]) => {
+  const items = DATA.be.filter(b => b.verdict === v);
+  if (!items.length) return "";
+  return `<div class="tier" style="--vc:var(--${v})"><div class="tier-label"><strong>${label}</strong><span>${sub}</span></div>
+    <div class="tier-cards">${items.map(b => `<div class="tcard"><a class="tile-link" href="#${slug("card", b.name)}">${tile(b.name)}</a>
+      <div class="meta"><span>Lists <b>${L.d4.cardLists[b.name] || 0}</b> / <b>${L.t5k.cardLists[b.name] || 0}</b></span><span>${CLS_NAME[b.cls]}</span></div>
+      <p>${esc(NOTES[b.name] || "")}</p></div>`).join("")}</div></div>`;
+}).join("");
+
 // craft list
 const maxScore = Math.max(...DATA.be.map(b => b.score));
-document.getElementById("groups").innerHTML = VERDICTS.map(([v, title, sub]) => {
+document.getElementById("groups").innerHTML = VERDICTS.map(([v, title, , , sub]) => {
   const items = DATA.be.filter(b => b.verdict === v);
   if (!items.length) return "";
   return `<div class="group" style="--vc:var(--${v})"><div class="group-head"><h3>${title}</h3><p>${sub}</p></div>${items.map(pick).join("")}</div>`;
@@ -308,44 +452,122 @@ function pick(b) {
       ? `<div class="needs"><span class="lbl">Also needs</span>${d.needs.map(n => tile(n, { sm: true })).join("")}<span class="sum">+${fmt(d.needsDust)} dust · ${needsSummary(d.needs)}</span></div>`
       : `<p class="none">Nothing else to craft: the rest of the deck is commons, rares or free cards.</p>`;
     const often = d.often.length ? `<p class="often"><span class="lbl" style="display:inline;margin-right:8px">Often with</span>${d.often.map(n => `<b>${esc(n)}</b>`).join(", ")}</p>` : "";
-    return `<div class="pair" style="--cc:${clsColor(d.arch)}">
-      <div class="pair-top"><b><i class="dot"></i>${esc(d.arch)}</b>${role}<span class="num">${d.wr.toFixed(1)}% · ${d.n}/${d.of} lists · ~${fmt(A[d.arch].dust)} dust deck</span><a href="#${slug(d.arch)}">Heat map</a></div>
+    return `<div class="pair">
+      <div class="pair-top">${deckChip(d.arch)}${role}<span class="num">${d.wr.toFixed(1)}% · ${d.n}/${d.of} lists · ~${fmt(A[d.arch].dust)} dust deck</span><a href="#${slug("deck", d.arch)}">Heat map</a></div>
       ${needs}${often}</div>`;
   }).join("");
   const seen = minor.length ? `<p class="seen">Also seen in ${minor.map(d => `${esc(d.arch)} (${d.n} of ${d.of} lists)`).join(", ")}.</p>` : "";
   const trap = b.trap ? `<p class="trap">${esc(b.trap)}</p>` : "";
-  return `<article class="pick">
+  const chip = VERDICTS.find(v => v[0] === b.verdict)[2];
+  return `<article class="pick" id="${slug("card", b.name)}">
     <div class="pick-head">${tile(b.name)}
       ${rarityBadge(b)}
-      <div class="pick-meta"><span class="chip">${b.verdict === "niche" ? "One deck" : b.verdict}</span><span>${CLS_NAME[b.cls]}</span><span><b>${b.lists}</b> lists</span></div>
+      <div class="pick-meta"><span class="chip">${chip}</span><span>${CLS_NAME[b.cls]}</span><span><b>${b.lists}</b> lists</span></div>
       <div class="weight"><span>Meta weight <b class="num" style="color:var(--ink)">${b.score.toFixed(1)}%</b></span><div class="track"><i style="width:${Math.max(2, b.score / maxScore * 100)}%"></i></div></div>
     </div>
     <div class="pairs">${trap}${pairs || '<p class="none">Not core or flex in any deck yet.</p>'}${seen}</div>
   </article>`;
 }
 
+// where each card is played: per class, per archetype, Diamond and Top 5k bars
+function boardTier(name, share, totalLists, arch) {
+  if (DATA.cards[name]?.free) return "free";
+  if (name === "N'Zoth, Dream's End" && arch === "BFU N'Zoth Handbuff DK") return "trap";
+  if (totalLists <= 1 && share >= 0.8) return "fringe";
+  return share >= 0.8 ? "core" : share >= 0.3 ? "flex" : "fringe";
+}
+(function board() {
+  const archs = {};
+  for (const lv of ["d4", "t5k"]) for (const [a, e] of Object.entries(L[lv].archetypes)) {
+    (archs[a] ||= { cls: e.cls, games: 0 })[lv] = e; archs[a].games += e.games;
+  }
+  const classes = {};
+  for (const [a, e] of Object.entries(archs)) (classes[e.cls] ||= { games: 0, archs: [] }), classes[e.cls].games += e.games, classes[e.cls].archs.push([a, e]);
+  document.getElementById("board").innerHTML = Object.entries(classes).sort((x, y) => y[1].games - x[1].games).map(([cls, C]) => {
+    const rows = C.archs.sort((x, y) => y[1].games - x[1].games).map(([a, e]) => {
+      const names = [...new Set([...Object.keys(e.d4?.cards || {}), ...Object.keys(e.t5k?.cards || {})])];
+      names.sort((x, y) => ((e.d4?.cards[y]?.share || 0) + (e.t5k?.cards[y]?.share || 0)) - ((e.d4?.cards[x]?.share || 0) + (e.t5k?.cards[x]?.share || 0)));
+      const wr = lv => e[lv] ? `<span>${lv === "d4" ? "D4-1" : "5k"} <b>${e[lv].wr.toFixed(1)}%</b> · ${e[lv].lists}</span>` : "";
+      const body = names.length ? names.map(n => {
+        const s4 = e.d4?.cards[n], s5 = e.t5k?.cards[n];
+        const t = boardTier(n, Math.max(s4?.share || 0, s5?.share || 0), (e.d4?.lists || 0) + (e.t5k?.lists || 0), a);
+        const bar = (lv, s) => e[lv] ? `<div class="bar ${lv}"><i style="width:${Math.round((s?.share || 0) * 100)}%"></i></div>` : `<div class="bar ${lv} na"></div>`;
+        return `<div class="row"><a class="tile-link" href="#${slug("card", n)}">${tile(n)}</a><div class="bars" aria-label="Diamond ${Math.round((s4?.share || 0) * 100)}%, Top 5k ${Math.round((s5?.share || 0) * 100)}%">${bar("d4", s4)}${bar("t5k", s5)}</div><span class="tchip ${t}">${t}</span></div>`;
+      }).join("") : `<p class="none">No Black Empire epics or legendaries.</p>`;
+      return `<div class="arch"><div class="arch-top">${deckChip(a)}<div class="arch-wr">${wr("d4")}${wr("t5k")}</div></div>${body}</div>`;
+    }).join("");
+    return `<div class="cls" style="${ccStyle(cls)}"><div class="cls-head">${esc(cls)}<span>${fmt(C.games)} games</span></div>${rows}</div>`;
+  }).join("");
+})();
+
+// slope chart from the archetype snapshot
+(function slope() {
+  const by = {};
+  for (const r of DATA.meta) (by[r.archetype] ||= {})[r.level === "Top 5k" ? "t" : "d"] = +r.winrate;
+  const rows = Object.entries(by).filter(([, v]) => v.d != null && v.t != null);
+  const W = 560, H = 360, top = 28, bot = 24, x1 = 150, x2 = W - 150, lo = 50, hi = 64;
+  const y = v => top + (hi - v) / (hi - lo) * (H - top - bot);
+  const spread = items => {
+    items.sort((a, b) => a.y - b.y);
+    for (let k = 0; k < 40; k++) for (let i = 1; i < items.length; i++) {
+      const gap = items[i].y - items[i - 1].y;
+      if (gap < 15) { const d = (15 - gap) / 2; items[i].y += d; items[i - 1].y -= d; }
+    }
+    return items;
+  };
+  const left = spread(rows.map(([a, v]) => ({ a, v: v.d, y: y(v.d) })));
+  const right = spread(rows.map(([a, v]) => ({ a, v: v.t, y: y(v.t) })));
+  const ticks = [50, 54, 58, 62].map(v => `<line x1="${x1}" x2="${x2}" y1="${y(v)}" y2="${y(v)}" stroke="var(--rule)" stroke-dasharray="2 4"/><text x="${(x1 + x2) / 2}" y="${y(v) - 4}" fill="var(--faint)" font-size="10" text-anchor="middle" font-family="IBM Plex Mono, monospace">${v}%</text>`).join("");
+  const lines = rows.map(([a, v]) => {
+    const col = (CLASS[clsOfArch(a)] || CLASS.Neutral)[0];
+    const hot = a === "C'Thun DH";
+    return `<line x1="${x1}" y1="${y(v.d)}" x2="${x2}" y2="${y(v.t)}" stroke="${col}" stroke-width="${hot ? 3.5 : 2}" opacity="${hot ? 1 : .85}"/>
+      <circle cx="${x1}" cy="${y(v.d)}" r="3.5" fill="${col}"/><circle cx="${x2}" cy="${y(v.t)}" r="3.5" fill="${col}"/>`;
+  }).join("");
+  const lab = (it, side) => `<text x="${side === "l" ? x1 - 10 : x2 + 10}" y="${it.y + 4}" fill="${it.a === "C'Thun DH" ? "var(--ink)" : "var(--mute)"}" font-size="11.5" font-weight="${it.a === "C'Thun DH" ? 700 : 400}" text-anchor="${side === "l" ? "end" : "start"}" font-family="Alegreya Sans, sans-serif">${side === "l" ? esc(it.a) + " " : ""}<tspan font-family="IBM Plex Mono, monospace" fill="var(--ink)">${it.v.toFixed(1)}</tspan>${side === "r" ? " " + esc(it.a) : ""}</text>`;
+  document.getElementById("slope").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Slope chart of archetype win rates from Diamond 4-1 to Top 5k">
+    ${ticks}
+    <text x="${x1}" y="14" fill="var(--mute)" font-size="11" text-anchor="middle" font-weight="700" font-family="Alegreya Sans, sans-serif" letter-spacing="1.5">DIAMOND 4-1</text>
+    <text x="${x2}" y="14" fill="var(--legendary)" font-size="11" text-anchor="middle" font-weight="700" font-family="Alegreya Sans, sans-serif" letter-spacing="1.5">TOP 5K</text>
+    ${lines}${left.map(i => lab(i, "l")).join("")}${right.map(i => lab(i, "r")).join("")}</svg>`;
+})();
+
+// N'Zoth duel
+(function duel() {
+  const a = { d4: L.d4.archetypes["BFU Handbuff DK"], t5k: L.t5k.archetypes["BFU Handbuff DK"] };
+  const b = { d4: L.d4.archetypes["BFU N'Zoth Handbuff DK"], t5k: L.t5k.archetypes["BFU N'Zoth Handbuff DK"] };
+  const sc = v => `${Math.max(0, (v - 50) / 12 * 100)}%`;
+  const dk = CLASS["Death Knight"][0];
+  const row = (lv, label) => `<div class="duel-row"><span>${label}</span><div class="duel-bars">
+      <div class="dbar"><i style="width:${sc(a[lv].wr)};background:${dk}"></i>${a[lv].wr.toFixed(1)}%</div>
+      <div class="dbar"><i style="width:${sc(b[lv].wr)};background:var(--skip)"></i>${b[lv].wr.toFixed(1)}%</div></div></div>`;
+  document.getElementById("duel").innerHTML = `
+    <div class="legend"><span><i class="sw" style="background:${dk}"></i>BFU Handbuff DK (no N'Zoth)</span><span><i class="sw" style="background:var(--skip)"></i>N'Zoth Handbuff DK</span></div>
+    ${row("d4", "Diamond 4-1")}${row("t5k", "Top 5k")}
+    <p class="num" style="font-size:.78rem;color:var(--faint)">Bars start at 50%. ${a.d4.lists + a.t5k.lists} and ${b.d4.lists + b.t5k.lists} lists.</p>`;
+})();
+
 // heat maps
 const deckOrder = Object.keys(A).sort((x, y) => A[y].w - A[x].w);
-const beNames = new Set(DATA.be.map(b => b.name));
 document.getElementById("heatmaps").innerHTML = deckOrder.map((a, i) => {
-  const D = A[a], cc = clsColor(a);
+  const D = A[a], cls = clsOfArch(a), cc = (CLASS[cls] || CLASS.Neutral)[0];
   const cols = D.lists.map(l => `<th class="col ${l.level === "Top 5k" ? "t5k" : ""}" title="${l.id}: ${l.wr}% over ${fmt(l.games)} games"><span>${l.wr.toFixed(1)}</span><i>${l.level === "Top 5k" ? "5k" : "D"}</i></th>`).join("");
   const rows = D.order.map(n => {
-    const s = D.share[n].share;
+    const s = D.share[n].share, c = DATA.cards[n];
     const cells = D.lists.map(l => `<td class="cell${l.cards.includes(n) ? " on" : ""}"></td>`).join("");
     const heat = `background:color-mix(in srgb, ${cc} ${Math.round(s * 70)}%, transparent)`;
-    return `<tr class="${beNames.has(n) && DATA.cards[n].set === "BE" && ["EPIC", "LEGENDARY"].includes(DATA.cards[n].rarity) ? "be" : ""}"><th>${tile(n, { sm: true })}</th><td class="share" style="${heat}">${pct(s)}</td>${cells}</tr>`;
+    const isBE = c.set === "BE" && (c.rarity === "EPIC" || c.rarity === "LEGENDARY");
+    return `<tr class="${isBE ? "be" : ""}"><th>${tile(n, { sm: true })}</th><td class="share" style="${heat}">${pct(s)}</td>${cells}</tr>`;
   }).join("");
   const core = D.coreCrafts.length ? `<div class="minis">${D.coreCrafts.map(n => tile(n, { sm: true })).join("")}</div>` : "";
-  return `<details class="deck" id="${slug(a)}" style="--cc:${cc}"${i < 3 ? " open" : ""}>
-    <summary><div class="deck-title"><h3>${esc(a)}</h3>
+  return `<details class="deck" id="${slug("deck", a)}" style="${ccStyle(cls)}"${i < 3 ? " open" : ""}>
+    <summary><div class="deck-title"><h3>${esc(a)}</h3><span class="deck-cls">${esc(cls)}</span>
       <span><b>${D.wr.toFixed(1)}%</b> avg win rate</span><span><b>${D.lists.length}</b> lists · ${fmt(D.games)} games</span>
-      <span>~<b>${fmt(D.dust)}</b> dust to build</span><span>core epics & legendaries: <b>${fmt(D.coreCraftDust)}</b> dust</span></div>${core}</summary>
+      <span>~<b>${fmt(D.dust)}</b> dust to build</span><span>core epics & legendaries to craft: <b>${fmt(D.coreCraftDust)}</b> dust</span></div>${core}</summary>
     <div class="hm-wrap"><table class="hm"><thead><tr><th></th><th>share</th>${cols}</tr></thead><tbody>${rows}</tbody></table></div>
   </details>`;
 }).join("");
 
-// open a heat map when its link is followed
 function openFromHash() {
   const el = location.hash && document.getElementById(location.hash.slice(1));
   if (el && el.tagName === "DETAILS") { el.open = true; el.scrollIntoView({ block: "start" }); }
@@ -359,7 +581,7 @@ openFromHash();
   for (const b of DATA.be.filter(b => b.verdict === "unplayed")) (groups[b.cls] ||= []).push(b.name);
   const n = Object.values(groups).flat().length;
   document.getElementById("bench-lede").textContent = `${n} of the 54 epics and legendaries don't appear in any of the ${DATA.totals.lists} lists. Hold your dust on these until they show up in a deck.`;
-  document.getElementById("bench").innerHTML = Object.keys(groups).sort().map(cls =>
+  document.getElementById("bench-grid").innerHTML = Object.keys(groups).sort().map(cls =>
     `<div class="bench-cls"><h4>${CLS_NAME[cls]}</h4>${groups[cls].map(n => tile(n, { bench: true })).join("")}</div>`).join("");
 })();
 

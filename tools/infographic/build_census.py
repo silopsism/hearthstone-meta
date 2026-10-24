@@ -139,7 +139,31 @@ for c in be_all:  # tiles for unplayed cards too
                                  "cls": c["cls"], "cost": c["cost"], "collectible": True,
                                  "free": free_reason(by_name[c["name"]])})
 
-data = {"cards": cards, "archetypes": arch_out, "be": be_out,
+# per-level view of Black Empire epics and legendaries, for the by-class board and ladder chart
+be_names = {c["name"] for c in be_all}
+levels = {}
+for key, label in (("d4", "Diamond 4-1"), ("t5k", "Top 5k")):
+    ls = [x for x in lists if x["level"] == label]
+    lv = {"lists": len(ls), "games": sum(x["games"] for x in ls), "archetypes": {}, "cardLists": defaultdict(int)}
+    for x in ls:
+        for n in x["cards"]:
+            if n in be_names:
+                lv["cardLists"][n] += 1
+    for a in {x["arch"] for x in ls}:
+        al = [x for x in ls if x["arch"] == a]
+        W = sum(x["w"] for x in al) or 1
+        games = sum(x["games"] for x in al)
+        lv["archetypes"][a] = {
+            "cls": CLASS_OF.get(a, "?"), "lists": len(al), "games": games,
+            "wr": round(sum(x["wr"] * x["games"] for x in al) / games, 1),
+            "cards": {n: {"n": sum(1 for x in al if n in x["cards"]),
+                          "share": round(sum(x["w"] for x in al if n in x["cards"]) / W, 2)}
+                      for n in {n for x in al for n in x["cards"] if n in be_names}},
+        }
+    levels[key] = lv
+meta = list(csv.DictReader(open(os.path.join(PROJ, "data", "archetypes_2026-10-24.csv"), encoding="utf-8")))
+
+data = {"cards": cards, "archetypes": arch_out, "be": be_out, "levels": levels, "meta": meta,
         "totals": {"lists": len(lists), "games": sum(x["games"] for x in lists),
                    "d4": sum(1 for x in lists if x["level"] != "Top 5k"), "t5k": sum(1 for x in lists if x["level"] == "Top 5k")}}
 
