@@ -64,8 +64,9 @@ section { display: grid; gap: 20px; }
 .tile {
   position: relative; display: flex; align-items: center; gap: 8px;
   height: 34px; min-width: 0; border-radius: 3px; overflow: hidden;
-  background: #1a1220; box-shadow: inset 3px 0 0 var(--rar); padding-left: 3px;
+  background: #1a1220; box-shadow: inset 5px 0 0 var(--rar); padding-left: 5px;
 }
+.tile.r-leg, .tile.r-epic { outline: 1px solid var(--rar); outline-offset: -1px; }
 .tile::before {
   content: ""; position: absolute; inset: 0 0 0 auto; width: 148px;
   background: var(--art) right center / auto 100% no-repeat;
@@ -80,13 +81,20 @@ section { display: grid; gap: 20px; }
   clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 }
 .tile .name { flex: 1; min-width: 0; font: 700 .92rem/1 var(--f-body); color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px #000, 0 0 6px #000; }
-.tile .star { flex: none; width: 22px; text-align: center; color: var(--legendary); font-size: .8rem; text-shadow: 0 0 4px #000; }
+/* rarity: a solid tag for the two expensive rarities, a small gem for the rest */
+.tile .rp { flex: none; margin-right: 5px; padding: 3px 5px; border-radius: 2px; background: var(--rar); color: #160f1b; font: 800 .6rem/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; box-shadow: 0 0 0 1px #000; }
+.tile.r-leg .rp { box-shadow: 0 0 0 1px #000, 0 0 8px var(--rar); }
+.tile .gem { flex: none; width: 9px; height: 9px; margin-right: 10px; transform: rotate(45deg); border-radius: 1px; background: var(--rar); box-shadow: 0 0 0 1px #000; }
 .tile.sm { height: 24px; gap: 6px; }
 .tile.sm::before { width: 104px; }
 .tile.sm .cost { width: 19px; height: 19px; font-size: .7rem; margin-left: 2px; }
 .tile.sm .name { font-size: .8rem; }
-.tile.sm .star { width: 16px; font-size: .68rem; }
-.tile.bench { filter: grayscale(1) brightness(.62); }
+.tile.sm .rp { padding: 2px 4px; font-size: .54rem; margin-right: 4px; }
+.tile.sm .gem { width: 7px; height: 7px; margin-right: 8px; }
+.tile.bench::before { filter: grayscale(1) brightness(.55); }
+.tile.bench .name, .tile.bench .cost { opacity: .7; }
+.rar-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; border-radius: 3px; background: var(--rar); color: #160f1b; font: 800 .74rem/1 var(--f-body); letter-spacing: .06em; text-transform: uppercase; }
+.rar-badge b { font-family: var(--f-data); font-weight: 600; letter-spacing: 0; color: inherit; }
 .tile.bonus .name { font-style: italic; font-weight: 500; }
 
 /* craft list */
@@ -147,7 +155,7 @@ section { display: grid; gap: 20px; }
 .hm td.share { width: 46px; text-align: right; padding-right: 6px; font: 600 .74rem/1 var(--f-body); font-variant-numeric: tabular-nums; color: var(--ink); border-radius: 2px; }
 .hm td.cell { width: 15px; height: 24px; background: var(--panel-2); border-radius: 2px; }
 .hm td.cell.on { background: var(--cc); }
-.hm tr.be th .tile { box-shadow: inset 3px 0 0 var(--rar), 0 0 0 1px var(--legendary); }
+.hm tr.be th .tile { box-shadow: inset 5px 0 0 var(--rar), 0 0 0 2px var(--ink); }
 .hm-legend { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: .84rem; color: var(--mute); }
 .hm-legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
 
@@ -185,15 +193,15 @@ section { display: grid; gap: 20px; }
     <div class="sec-head">
       <p class="eyebrow">Heat maps</p>
       <h2>Every deck, card by card</h2>
-      <p>Rows are cards, columns are the deck's lists from highest win rate to lowest. A filled cell means that list runs the card, so solid rows are mandatory and patchy rows are flex slots. Black Empire epics and legendaries are outlined in gold.</p>
+      <p>Rows are cards, columns are the deck's lists from highest win rate to lowest. A filled cell means that list runs the card, so solid rows are mandatory and patchy rows are flex slots. Black Empire epics and legendaries are outlined in white.</p>
     </div>
     <div class="hm-legend">
       <span><b class="num" style="color:var(--mute)">D</b> Diamond 4-1 list</span>
       <span><b class="num" style="color:var(--legendary)">5k</b> Top 5k legend list</span>
-      <span><i class="sw" style="background:var(--legendary)"></i>Legendary</span>
-      <span><i class="sw" style="background:var(--epic)"></i>Epic</span>
-      <span><i class="sw" style="background:var(--rare)"></i>Rare</span>
-      <span><i class="sw" style="background:var(--common)"></i>Common or free</span>
+      <span><i class="rar-badge" style="--rar:var(--legendary);padding:2px 5px;font-size:.6rem">Leg</i> Legendary, 1,600 dust</span>
+      <span><i class="rar-badge" style="--rar:var(--epic);padding:2px 5px;font-size:.6rem">Epic</i> Epic, 400 dust each</span>
+      <span><i class="sw" style="background:var(--rare);transform:rotate(45deg);width:9px;height:9px"></i>Rare</span>
+      <span><i class="sw" style="background:var(--common);transform:rotate(45deg);width:9px;height:9px"></i>Common or free</span>
       <span><i>Italic</i> = bonus card that comes with a Fabled legendary</span>
     </div>
     <div id="heatmaps"></div>
@@ -226,7 +234,18 @@ const CLASS = {
 };
 const CLS_NAME = { DEATHKNIGHT: "Death Knight", DEMONHUNTER: "Demon Hunter", DRUID: "Druid", HUNTER: "Hunter", MAGE: "Mage",
   NEUTRAL: "Neutral", PALADIN: "Paladin", PRIEST: "Priest", ROGUE: "Rogue", SHAMAN: "Shaman", WARLOCK: "Warlock", WARRIOR: "Warrior" };
-const RAR = { LEGENDARY: "var(--legendary)", EPIC: "var(--epic)", RARE: "var(--rare)" };
+const RARITY = {
+  LEGENDARY: { cls: "r-leg", tag: "Leg", label: "Legendary", color: "var(--legendary)" },
+  EPIC: { cls: "r-epic", tag: "Epic", label: "Epic", color: "var(--epic)" },
+  RARE: { cls: "r-rare", label: "Rare", color: "var(--rare)" },
+  COMMON: { cls: "r-common", label: "Common", color: "var(--common)" },
+  FREE: { cls: "r-common", label: "Free", color: "var(--common)" }
+};
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+function needsSummary(names) {
+  const leg = names.filter(n => DATA.cards[n].rarity === "LEGENDARY").length, epic = names.length - leg;
+  return [leg && plural(leg, "legendary", "legendaries"), epic && plural(epic, "epic", "epics")].filter(Boolean).join(", ");
+}
 const VERDICTS = [
   ["craft", "Craft these first", "Core in at least one strong, popular deck."],
   ["optional", "Flex picks", "Some versions of a deck run it, but you can build the deck without it."],
@@ -244,13 +263,16 @@ const clsColor = a => CLASS[A[a]?.cls] || CLASS.Neutral;
 
 function tile(name, opts = {}) {
   const c = DATA.cards[name];
-  const cls = ["tile", opts.sm ? "sm" : "", opts.bench ? "bench" : "", c.collectible ? "" : "bonus"].filter(Boolean).join(" ");
-  const star = c.rarity === "LEGENDARY" ? '<span class="star" aria-label="Legendary">★</span>' : '<span class="star"></span>';
+  const r = RARITY[c.rarity] || RARITY.COMMON;
+  const cls = ["tile", r.cls, opts.sm ? "sm" : "", opts.bench ? "bench" : "", c.collectible ? "" : "bonus"].filter(Boolean).join(" ");
+  const mark = r.tag ? `<span class="rp">${r.tag}</span>` : `<span class="gem" aria-label="${r.label}"></span>`;
   const art = DATA.tiles?.[c.id] || `tiles/${c.id}.webp`;
-  return `<div class="${cls}" style="--art:url('${art}');--rar:${RAR[c.rarity] || "var(--common)"}" title="${esc(name)} · ${esc(c.setName)}">` +
-    `<span class="cost">${c.cost ?? ""}</span><span class="name">${esc(name)}</span>${star}</div>`;
+  return `<div class="${cls}" style="--art:url('${art}');--rar:${r.color}" title="${esc(name)} · ${r.label} · ${esc(c.setName)}">` +
+    `<span class="cost">${c.cost ?? ""}</span><span class="name">${esc(name)}</span>${mark}</div>`;
 }
-const dustLabel = b => b.rarity === "LEGENDARY" ? `<b>${fmt(b.dust)}</b> dust` : `<b>${fmt(b.dust)}</b> dust for 2`;
+const rarityBadge = b => b.rarity === "LEGENDARY"
+  ? `<span class="rar-badge" style="--rar:var(--legendary)">Legendary · <b>${fmt(b.dust)}</b> dust</span>`
+  : `<span class="rar-badge" style="--rar:var(--epic)">Epic · <b>${fmt(b.dust)}</b> dust for 2</span>`;
 
 // hero
 const played = DATA.be.filter(b => b.verdict !== "unplayed");
@@ -276,7 +298,7 @@ function pick(b) {
   const pairs = main.map(d => {
     const role = d.share >= 0.8 ? `<span class="role core">Core · ${pct(d.share)}</span>` : `<span class="role flex">Flex · ${pct(d.share)}</span>`;
     const needs = d.needs.length
-      ? `<div class="needs"><span class="lbl">Also needs</span>${d.needs.map(n => tile(n, { sm: true })).join("")}<span class="sum">+${fmt(d.needsDust)} dust</span></div>`
+      ? `<div class="needs"><span class="lbl">Also needs</span>${d.needs.map(n => tile(n, { sm: true })).join("")}<span class="sum">+${fmt(d.needsDust)} dust · ${needsSummary(d.needs)}</span></div>`
       : `<p class="none">Nothing else to craft: the rest of the deck is commons, rares or free cards.</p>`;
     const often = d.often.length ? `<p class="often"><span class="lbl" style="display:inline;margin-right:8px">Often with</span>${d.often.map(n => `<b>${esc(n)}</b>`).join(", ")}</p>` : "";
     return `<div class="pair" style="--cc:${clsColor(d.arch)}">
@@ -287,7 +309,8 @@ function pick(b) {
   const trap = b.trap ? `<p class="trap">${esc(b.trap)}</p>` : "";
   return `<article class="pick">
     <div class="pick-head">${tile(b.name)}
-      <div class="pick-meta"><span class="chip">${VERDICTS.find(v => v[0] === b.verdict)[0] === "niche" ? "One deck" : b.verdict}</span><span class="dust">${dustLabel(b)}</span><span>${CLS_NAME[b.cls]}</span><span><b>${b.lists}</b> lists</span></div>
+      ${rarityBadge(b)}
+      <div class="pick-meta"><span class="chip">${b.verdict === "niche" ? "One deck" : b.verdict}</span><span>${CLS_NAME[b.cls]}</span><span><b>${b.lists}</b> lists</span></div>
       <div class="weight"><span>Meta weight <b class="num" style="color:var(--ink)">${b.score.toFixed(1)}%</b></span><div class="track"><i style="width:${Math.max(2, b.score / maxScore * 100)}%"></i></div></div>
     </div>
     <div class="pairs">${trap}${pairs || '<p class="none">Not core or flex in any deck yet.</p>'}${seen}</div>
