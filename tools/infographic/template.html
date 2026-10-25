@@ -533,8 +533,12 @@ function route() {
     showTab(state.tab);
   }
 }
+// tab clicks don't touch the URL, so a reload always opens on Cards; #set etc. still work as links
+const clearHash = () => { if (location.hash) history.replaceState(null, "", location.pathname + location.search); };
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
-  if (location.hash !== "#" + b.dataset.tab) location.hash = b.dataset.tab; else showTab(b.dataset.tab);
+  clearHash();
+  showTab(b.dataset.tab);
+  window.scrollTo({ top: document.querySelector(".tabs").offsetTop - 8 });
 }));
 addEventListener("hashchange", route);
 
