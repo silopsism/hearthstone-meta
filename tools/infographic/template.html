@@ -223,14 +223,23 @@ a.deck-chip:hover { filter: brightness(1.12); }
     <p class="lede">Which epics and legendaries are worth your dust, read from HSGuru's best-performing ladder lists. Pick a set to see every card in it, how often it's played, and what you need alongside it.</p>
     <div class="stats" id="stats"></div>
     <nav class="tabs" role="tablist" aria-label="Views">
+      <button role="tab" id="tb-cards" aria-controls="cards" data-tab="cards">Cards</button>
       <button role="tab" id="tb-set" aria-controls="set" data-tab="set">Set</button>
       <button role="tab" id="tb-decks" aria-controls="decks" data-tab="decks">Decks</button>
       <button role="tab" id="tb-classes" aria-controls="classes" data-tab="classes">Classes</button>
-      <button role="tab" id="tb-cards" aria-controls="cards" data-tab="cards">Cards</button>
     </nav>
   </header>
 
-  <section class="panel-tab" id="set" role="tabpanel" aria-labelledby="tb-set">
+  <section class="panel-tab" id="cards" role="tabpanel" aria-labelledby="tb-cards">
+    <div class="tab-head">
+      <div><h2>What to craft</h2><p>Mandatory, everywhere cards at the top; for-the-lols picks at the bottom. A card ranks highest when it's core across separate archetypes or classes, so it's worth owning whatever you build. List counts are Diamond 4-1 / Top 5k, and the chips show the decks that run it in at least 30% of their play.</p></div>
+      <label class="setpick">Set<select id="pick-cards" data-setpick></select></label>
+    </div>
+    <div class="tiers" id="tier-rows"></div>
+    <p class="unplayed" id="unplayed"></p>
+  </section>
+
+  <section class="panel-tab" id="set" role="tabpanel" aria-labelledby="tb-set" hidden>
     <div class="tab-head">
       <div><h2 id="set-title"></h2><p>Every epic and legendary in the set, by class, ranked by tier with legendaries first. Click a card to see the decks it goes into and the other epics and legendaries you'd need.</p></div>
       <label class="setpick">Set<select id="pick-set" data-setpick></select></label>
@@ -280,15 +289,6 @@ a.deck-chip:hover { filter: brightness(1.12); }
       <span><b style="color:var(--t-trash)">FRINGE</b> under 30% or one list</span>
     </div>
     <div class="board" id="board"></div>
-  </section>
-
-  <section class="panel-tab" id="cards" role="tabpanel" aria-labelledby="tb-cards" hidden>
-    <div class="tab-head">
-      <div><h2>What to craft</h2><p>Mandatory, everywhere cards at the top; for-the-lols picks at the bottom. A card ranks highest when it's core across separate archetypes or classes, so it's worth owning whatever you build. List counts are Diamond 4-1 / Top 5k, and the chips show the decks that run it in at least 30% of their play.</p></div>
-      <label class="setpick">Set<select id="pick-cards" data-setpick></select></label>
-    </div>
-    <div class="tiers" id="tier-rows"></div>
-    <p class="unplayed" id="unplayed"></p>
   </section>
 
   <footer class="method">
@@ -354,7 +354,7 @@ function tile(name, opts = {}) {
 }
 
 // state: chosen set and tab, remembered per viewer
-const state = { set: "BE", tab: "set" };
+const state = { set: "BE", tab: "cards" };
 try { const s = JSON.parse(localStorage.getItem("census") || "{}"); if (s.set) state.set = s.set; } catch (e) {}
 const save = () => { try { localStorage.setItem("census", JSON.stringify({ set: state.set })); } catch (e) {} };
 
