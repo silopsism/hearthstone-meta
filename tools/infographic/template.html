@@ -152,6 +152,9 @@ a.deck-chip:hover { filter: brightness(1.12); }
 .deck-title span { font: 400 .84rem/1.2 var(--f-data); font-variant-numeric: tabular-nums; opacity: .9; }
 .deck-title span b { font-weight: 600; }
 .deck-title .sep { opacity: .55; }
+.deck-title .st { display: inline-flex; align-items: center; gap: 6px; }
+.st svg, .ico svg { width: 16px; height: 16px; flex: none; opacity: .85; }
+.ico { display: inline-flex; vertical-align: -3px; margin: 0 2px; }
 .deck-title .rc { display: inline-flex; align-items: baseline; gap: 3px; font: 700 .84rem/1 var(--f-body); opacity: 1; }
 .deck-title .rc b { font: 700 1.35rem/1 var(--f-data); font-variant-numeric: tabular-nums; }
 .deck-title .rc i { font: 800 .62rem/1 var(--f-body); font-style: normal; letter-spacing: .12em; opacity: .75; margin-right: 10px; }
@@ -301,7 +304,7 @@ a.deck-chip:hover { filter: brightness(1.12); }
   </section>
 
   <section class="panel-tab" id="decks" role="tabpanel" aria-labelledby="tb-decks" hidden>
-    <div class="tab-head"><div><h2>Every deck, card by card</h2><p>Click a deck to open its heat map. Each archetype is one deck and its HSGuru lists are variants of it. Rows are cards, columns are lists from highest win rate to lowest; a filled cell means that list runs the card, so solid rows are mandatory and patchy rows are flex slots. LEG and EPIC count the epics and legendaries you'd have to craft.</p></div>
+    <div class="tab-head"><div><h2>Every deck, card by card</h2><p>Click a deck to open its heat map. Each archetype is one deck and its HSGuru lists are variants of it. Rows are cards, columns are lists from highest win rate to lowest; a filled cell means that list runs the card, so solid rows are mandatory and patchy rows are flex slots. On each deck, <span class="ico" id="ico-trophy"></span> is the average win rate, <span class="ico" id="ico-swords"></span> the games played, and LEG / EPIC count the epics and legendaries you'd have to craft.</p></div>
       <div class="allbtns" data-scope="heatmaps"><button type="button" data-all="open">Expand all</button><button type="button" data-all="close">Collapse all</button></div></div>
     <div class="chart-panel">
       <h3>What holds up against better players</h3>
@@ -366,6 +369,11 @@ const TIERS = [
   ["free", "Free", "Free", "Costs no dust: Core set, events, reward tracks, pack or quest grants."]
 ];
 const TIER = Object.fromEntries(TIERS.map(t => [t[0], t]));
+const svg = body => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+const ICON = {
+  trophy: svg('<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>'),
+  swords: svg('<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/>')
+};
 const CRAFT = Object.fromEntries(DATA.crafts.map(b => [b.name, b]));
 const A = DATA.archetypes, L = DATA.levels;
 
@@ -502,7 +510,7 @@ function renderDecks() {
       : `<p class="none">Every core epic and legendary in this deck is free.</p>`;
     return `<details class="deck" id="${slug("deck", a)}" style="${ccStyle(cls)}">
       <summary><div class="deck-title"><h3>${esc(a)}</h3>
-        <span><b>${D.wr.toFixed(1)}%</b> win rate</span><span class="sep">·</span><span><b>${fmt(D.games)}</b> games</span><span class="sep">·</span>${crafts}</div></summary>
+        <span class="st" title="Average win rate" aria-label="${D.wr.toFixed(1)}% average win rate">${ICON.trophy}<b>${D.wr.toFixed(1)}%</b></span><span class="sep">·</span><span class="st" title="Games played" aria-label="${fmt(D.games)} games played">${ICON.swords}<b>${fmt(D.games)}</b></span><span class="sep">·</span>${crafts}</div></summary>
       <div class="deck-sum">
         <p><b>${D.lists.length}</b> list${D.lists.length === 1 ? "" : "s"} · ${esc(cls)} · about <b>${fmt(D.dust)}</b> dust to build · core epics and legendaries to craft: <b>${fmt(D.coreCraftDust)}</b> dust</p>
         ${core}
@@ -714,6 +722,8 @@ addEventListener("hashchange", route);
   addEventListener("scroll", () => { over = null; hide(); }, { passive: true });
 })();
 
+document.getElementById("ico-trophy").innerHTML = ICON.trophy;
+document.getElementById("ico-swords").innerHTML = ICON.swords;
 renderSlope();
 renderDecks();
 renderFiltered();
