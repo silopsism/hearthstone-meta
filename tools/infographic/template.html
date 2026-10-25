@@ -194,8 +194,11 @@ a.deck-chip:hover { filter: brightness(1.12); }
 .cls-head { display: grid; grid-template-columns: var(--clsw, 190px) minmax(0, 1fr); cursor: pointer; }
 .cls-open { appearance: none; border: 0; font: inherit; text-align: left; cursor: pointer; }
 .cls-open .chev { display: inline-block; }
-.cls-head .bstrip { padding: 8px 12px; }
-.cmeta { font: 400 .8rem/1.2 var(--f-data); color: var(--mute); font-variant-numeric: tabular-nums; }
+.cls-head .bstrip { padding: 8px 10px; flex-wrap: nowrap; gap: 10px; }
+.cls-head .view-tog button { padding: 6px 8px; font-size: .66rem; }
+.cmeta { display: grid; gap: 2px; text-align: right; font: 400 .76rem/1.15 var(--f-data); color: var(--mute); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cmeta b { color: var(--ink); font-weight: 600; }
+.view-tog { flex: none; }
 .view-tog { display: inline-flex; border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px color-mix(in srgb, var(--cc) 55%, var(--rule)); }
 .view-tog button { appearance: none; border: 0; background: transparent; color: var(--mute); font: 700 .72rem/1 var(--f-body); letter-spacing: .06em; text-transform: uppercase; padding: 6px 10px; cursor: pointer; }
 .view-tog button:hover { color: var(--ink); }
@@ -559,7 +562,7 @@ function renderClasses() {
     const tog = ["archetypes", "summary"].map(v => `<button type="button" data-view="${v}" aria-pressed="${v === view}">${v === "archetypes" ? "Archetypes" : "Summary"}</button>`).join("");
     return `<div class="cls" data-cls="${esc(cls)}" data-view="${view}"${open ? " data-open" : ""} style="${ccStyle(cls)}">
       <div class="cls-head"><button type="button" class="cls-open bname" aria-expanded="${open}"><span class="chev" aria-hidden="true">▸</span><span class="cname">${esc(cls)}</span></button>
-        <div class="bstrip"><span class="cmeta">${C.archs.length} deck${C.archs.length === 1 ? "" : "s"} · ${fmt(C.games)} games</span><div class="view-tog" role="group" aria-label="${esc(cls)} view">${tog}</div></div></div>
+        <div class="bstrip"><span class="cmeta"><span><b>${C.archs.length}</b> deck${C.archs.length === 1 ? "" : "s"}</span><span><b>${fmt(C.games)}</b> games</span></span><div class="view-tog" role="group" aria-label="${esc(cls)} view">${tog}</div></div></div>
       <div class="v-arch">${rows}</div><div class="v-sum">${classSummary(cls, C.archs, label)}</div></div>`;
   }).join("");
 }
@@ -646,10 +649,10 @@ function renderCards() {
 /* ---------- tabs and routing ---------- */
 // size each tab's colour name blocks to its longest name (only measurable while the tab is visible)
 function fitNames() {
-  for (const [root, sel, prop] of [[document.getElementById("heatmaps"), ".bname h3", "--namew"], [document.getElementById("board"), ".bname .cname", "--clsw"]]) {
+  for (const [root, sel, prop, pad] of [[document.getElementById("heatmaps"), ".bname h3", "--namew", 58], [document.getElementById("board"), ".bname .cname", "--clsw", 50]]) {
     let m = 0;
     root.querySelectorAll(sel).forEach(n => { m = Math.max(m, n.getBoundingClientRect().width); });
-    if (m) root.style.setProperty(prop, Math.ceil(m + 58) + "px");
+    if (m) root.style.setProperty(prop, Math.ceil(m + pad) + "px");
   }
 }
 function renderFiltered() {
