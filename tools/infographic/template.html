@@ -172,6 +172,17 @@ a.deck-chip:hover { filter: brightness(1.12); }
 .cls { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; min-width: 0; }
 .cls-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 9px 12px; background: var(--cc); color: var(--cc-ink); font: 700 1rem/1.2 var(--f-display); letter-spacing: .04em; }
 .cls-head span { font: 500 .8rem/1 var(--f-body); opacity: .85; letter-spacing: 0; }
+.cls-head { align-items: center; flex-wrap: wrap; }
+.cls-head .ttl { display: grid; gap: 3px; }
+.view-tog { display: inline-flex; border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px color-mix(in srgb, var(--cc-ink) 45%, transparent); }
+.view-tog button { appearance: none; border: 0; background: transparent; color: var(--cc-ink); font: 700 .72rem/1 var(--f-body); letter-spacing: .06em; text-transform: uppercase; padding: 6px 10px; cursor: pointer; opacity: .75; }
+.view-tog button[aria-pressed="true"] { background: var(--cc-ink); color: var(--cc); opacity: 1; }
+.cls[data-view="summary"] .v-arch, .cls[data-view="archetypes"] .v-sum { display: none; }
+.v-sum { padding: 12px; display: grid; gap: 8px; }
+.v-sum .sub { font: 700 .68rem/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-top: 4px; }
+.v-sum .sub b { color: var(--tc); }
+.srow { display: grid; grid-template-columns: minmax(0, 1fr) 84px 58px; gap: 8px; align-items: center; }
+.srow .cnt { font: 400 .72rem/1.2 var(--f-data); color: var(--mute); text-align: right; font-variant-numeric: tabular-nums; }
 .arch { padding: 12px; display: grid; gap: 8px; border-top: 1px solid var(--rule); }
 .arch:first-of-type { border-top: 0; }
 .arch-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
@@ -294,7 +305,7 @@ a.deck-chip:hover { filter: brightness(1.12); }
 
   <section class="panel-tab" id="classes" role="tabpanel" aria-labelledby="tb-classes" hidden>
     <div class="tab-head">
-      <div><h2>Where each card is played</h2><p>Each bar is the card's weighted share of that archetype's lists at one level. A hatched bar means the archetype had no qualifying lists at that level.</p></div>
+      <div><h2>Where each card is played</h2><p>Each bar is the card's weighted share of that archetype's lists at one level. A hatched bar means the archetype had no qualifying lists at that level. Switch a class to Summary to merge its archetypes and see which cards are mandatory for the class as a whole.</p></div>
       <label class="setpick">Set<select id="pick-classes" data-setpick></select></label>
     </div>
     <div class="legend">
@@ -501,9 +512,52 @@ function renderClasses() {
       }).join("") : `<p class="none">No ${esc(label)} epics or legendaries.</p>`;
       return `<div class="arch"><div class="arch-top">${deckChip(a)}<div class="arch-wr">${wr("d4")}${wr("t5k")}</div></div>${body}</div>`;
     }).join("");
-    return `<div class="cls" style="${ccStyle(cls)}"><div class="cls-head">${esc(cls)}<span>${fmt(C.games)} games</span></div>${rows}</div>`;
+    const view = clsView[cls] || "archetypes";
+    const tog = ["archetypes", "summary"].map(v => `<button type="button" data-view="${v}" aria-pressed="${v === view}">${v === "archetypes" ? "Archetypes" : "Summary"}</button>`).join("");
+    return `<div class="cls" data-cls="${esc(cls)}" data-view="${view}" style="${ccStyle(cls)}">
+      <div class="cls-head"><div class="ttl">${esc(cls)}<span>${fmt(C.games)} games</span></div><div class="view-tog" role="group" aria-label="${esc(cls)} view">${tog}</div></div>
+      <div class="v-arch">${rows}</div><div class="v-sum">${classSummary(cls, C.archs, label)}</div></div>`;
   }).join("");
 }
+
+// one class, all its archetypes merged: how much of the class's weighted play runs each card
+const clsView = {};
+const CLASS_TIERS = [
+  ["mandatory", "Mandatory", "in 75%+ of the class's play; hard to play the class without it", "var(--t-core)", .75],
+  ["solid", "Solid", "in 30–75%; a regular in some of its decks", "var(--t-solid)", .3],
+  ["fringe", "Fringe", "under 30%; an occasional pick", "var(--t-trash)", 0]
+];
+function classSummary(cls, archList, label) {
+  const shareAt = (lv, n) => {
+    let W = 0, S = 0;
+    for (const [, e] of archList) if (e[lv]) { W += e[lv].w; S += e[lv].w * (e[lv].cards[n]?.share || 0); }
+    return W ? S / W : null;
+  };
+  const overall = n => {
+    let W = 0, S = 0;
+    for (const [a] of archList) { const D = A[a]; if (D) { W += D.w; S += D.w * (D.share[n]?.share || 0); } }
+    return W ? S / W : 0;
+  };
+  const names = [...new Set(archList.flatMap(([, e]) => [...Object.keys(e.d4?.cards || {}), ...Object.keys(e.t5k?.cards || {})]))].filter(inSet);
+  if (!names.length) return `<p class="none">No ${esc(label)} epics or legendaries.</p>`;
+  const rows = names.map(n => ({ n, s: overall(n), d4: shareAt("d4", n), t5k: shareAt("t5k", n),
+    k: archList.filter(([a]) => (A[a]?.share[n]?.share || 0) >= 0.3).length })).sort((x, y) => y.s - x.s);
+  const bar = (lv, s) => s == null ? `<div class="bar ${lv} na"></div>` : `<div class="bar ${lv}"><i style="width:${Math.round(s * 100)}%"></i></div>`;
+  return CLASS_TIERS.map(([key, name, desc, color, min], i) => {
+    const max = i ? CLASS_TIERS[i - 1][4] : 2;
+    const items = rows.filter(r => r.s >= min && r.s < max && (key !== "fringe" || r.s > 0));
+    if (!items.length) return "";
+    return `<p class="sub" style="--tc:${color}"><b>${name}</b> · ${desc}</p>` + items.map(r =>
+      `<div class="srow">${tile(r.n)}<div class="bars" aria-label="${pct(r.s)} of ${esc(cls)} play">${bar("d4", r.d4)}${bar("t5k", r.t5k)}</div><span class="cnt" title="decks running it in 30%+ of their play">${r.s < 0.005 ? "<1%" : pct(r.s)}<br>${r.k}/${archList.length} decks</span></div>`).join("");
+  }).join("");
+}
+document.getElementById("board").addEventListener("click", e => {
+  const b = e.target.closest(".view-tog button");
+  if (!b) return;
+  const panel = b.closest(".cls");
+  clsView[panel.dataset.cls] = panel.dataset.view = b.dataset.view;
+  panel.querySelectorAll(".view-tog button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+});
 
 /* ---------- CARDS tab ---------- */
 function renderCards() {

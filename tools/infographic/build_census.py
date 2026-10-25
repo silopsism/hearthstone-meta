@@ -181,7 +181,7 @@ for key, label in (("d4", "Diamond 4-1"), ("t5k", "Top 5k")):
         W = sum(x["w"] for x in al) or 1
         games = sum(x["games"] for x in al)
         lv["archetypes"][a] = {
-            "cls": CLASS_OF.get(a, "?"), "lists": len(al), "games": games,
+            "cls": CLASS_OF.get(a, "?"), "lists": len(al), "games": games, "w": W,
             "wr": round(sum(x["wr"] * x["games"] for x in al) / games, 1),
             "cards": {n: {"n": sum(1 for x in al if n in x["cards"]),
                           "share": round(sum(x["w"] for x in al if n in x["cards"]) / W, 2)}
