@@ -67,11 +67,15 @@ def free_reason(c):
     return None
 
 
-lists = []
+lists, bonus = [], set()
 for r in csv.DictReader(open(os.path.join(PROJ, "data", "lists_2026-10-24.csv"), encoding="utf-8")):
     wr, g = float(r["winrate"]), int(r["games"])
+    names = [x for x in r["cards"].split(";") if x]
+    # bonus cards a Fabled legendary adds to the deck (Rafaam's forms, Garona's King Llane, ...) count only via that legendary
+    bonus |= {x for x in names if not by_name[x].get("collectible")}
     lists.append({"id": r["deck"], "level": r["level"], "arch": r["archetype"], "wr": wr, "games": g,
-                  "dust": int(r["dust"]), "w": g * max(wr - 50, 0), "cards": [x for x in r["cards"].split(";") if x]})
+                  "dust": int(r["dust"]), "w": g * max(wr - 50, 0),
+                  "cards": [x for x in names if by_name[x].get("collectible")]})
 
 pool = {c["name"]: c for c in allc
         if c.get("collectible") and c.get("set") in STANDARD and c.get("rarity") in ("EPIC", "LEGENDARY")
@@ -220,4 +224,5 @@ standalone = ('<!doctype html>\n<html lang="en">\n<head>\n'
               '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
               + head + '<style>body{margin:0}</style>\n</head>\n<body>\n<div class="wrap">' + rest + "\n</body>\n</html>\n")
 open(os.path.join(PROJ, "site", "black-empire-census", "index.html"), "w", encoding="utf-8").write(standalone)
+print("left out", len(bonus), "Fabled bonus cards:", ", ".join(sorted(bonus)))
 print(len(cards), "cards,", len(arch_out), "archetypes,", len(crafts), "Standard epics and legendaries")
