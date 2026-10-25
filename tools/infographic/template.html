@@ -178,6 +178,14 @@ a.deck-chip:hover { filter: brightness(1.12); }
 .view-tog button { appearance: none; border: 0; background: transparent; color: var(--cc-ink); font: 700 .72rem/1 var(--f-body); letter-spacing: .06em; text-transform: uppercase; padding: 6px 10px; cursor: pointer; opacity: .75; }
 .view-tog button[aria-pressed="true"] { background: var(--cc-ink); color: var(--cc); opacity: 1; }
 .cls[data-view="summary"] .v-arch, .cls[data-view="archetypes"] .v-sum { display: none; }
+.cls:not([data-open]) .v-arch, .cls:not([data-open]) .v-sum { display: none; }
+.cls-open { appearance: none; background: none; border: 0; padding: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.cls-open .chev { display: inline-block; font-size: .8em; transition: transform .15s; }
+.cls[data-open] .cls-open .chev { transform: rotate(90deg); }
+@media (prefers-reduced-motion: reduce) { .cls-open .chev { transition: none; } }
+.tab-head > .allbtns { display: flex; gap: 6px; max-width: none; }
+.allbtns button { appearance: none; background: var(--panel); color: var(--ink); border: 1px solid var(--rule); border-radius: 4px; padding: 8px 12px; font: 600 .84rem/1 var(--f-body); cursor: pointer; }
+.allbtns button:hover { border-color: var(--legendary); }
 .v-sum { padding: 12px; display: grid; gap: 8px; }
 .v-sum .sub { font: 700 .68rem/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-top: 4px; }
 .v-sum .sub b { color: var(--tc); }
@@ -305,7 +313,8 @@ a.deck-chip:hover { filter: brightness(1.12); }
 
   <section class="panel-tab" id="classes" role="tabpanel" aria-labelledby="tb-classes" hidden>
     <div class="tab-head">
-      <div><h2>Where each card is played</h2><p>Each bar is the card's weighted share of that archetype's lists at one level. A hatched bar means the archetype had no qualifying lists at that level. Switch a class to Summary to merge its archetypes and see which cards are mandatory for the class as a whole.</p></div>
+      <div><h2>Where each card is played</h2><p>Click a class to open it. Each bar is the card's weighted share of that archetype's lists at one level; a hatched bar means the archetype had no qualifying lists at that level. Switch a class to Summary to merge its archetypes and see which cards are mandatory for the class as a whole.</p></div>
+      <div class="allbtns"><button type="button" data-all="open">Expand all</button><button type="button" data-all="close">Collapse all</button></div>
       <label class="setpick">Set<select id="pick-classes" data-setpick></select></label>
     </div>
     <div class="legend">
@@ -512,16 +521,16 @@ function renderClasses() {
       }).join("") : `<p class="none">No ${esc(label)} epics or legendaries.</p>`;
       return `<div class="arch"><div class="arch-top">${deckChip(a)}<div class="arch-wr">${wr("d4")}${wr("t5k")}</div></div>${body}</div>`;
     }).join("");
-    const view = clsView[cls] || "archetypes";
+    const view = clsView[cls] || "archetypes", open = !!clsOpen[cls];
     const tog = ["archetypes", "summary"].map(v => `<button type="button" data-view="${v}" aria-pressed="${v === view}">${v === "archetypes" ? "Archetypes" : "Summary"}</button>`).join("");
-    return `<div class="cls" data-cls="${esc(cls)}" data-view="${view}" style="${ccStyle(cls)}">
-      <div class="cls-head"><div class="ttl">${esc(cls)}<span>${fmt(C.games)} games</span></div><div class="view-tog" role="group" aria-label="${esc(cls)} view">${tog}</div></div>
+    return `<div class="cls" data-cls="${esc(cls)}" data-view="${view}"${open ? " data-open" : ""} style="${ccStyle(cls)}">
+      <div class="cls-head"><button type="button" class="cls-open" aria-expanded="${open}"><span class="chev" aria-hidden="true">▸</span><span class="ttl">${esc(cls)}<span>${C.archs.length} deck${C.archs.length === 1 ? "" : "s"} · ${fmt(C.games)} games</span></span></button><div class="view-tog" role="group" aria-label="${esc(cls)} view">${tog}</div></div>
       <div class="v-arch">${rows}</div><div class="v-sum">${classSummary(cls, C.archs, label)}</div></div>`;
   }).join("");
 }
 
 // one class, all its archetypes merged: how much of the class's weighted play runs each card
-const clsView = {};
+const clsView = {}, clsOpen = {};  // classes start closed
 const CLASS_TIERS = [
   ["mandatory", "Mandatory", "in 75%+ of the class's play; hard to play the class without it", "var(--t-core)", .75],
   ["solid", "Solid", "in 30–75%; a regular in some of its decks", "var(--t-solid)", .3],
@@ -551,12 +560,24 @@ function classSummary(cls, archList, label) {
       `<div class="srow">${tile(r.n)}<div class="bars" aria-label="${pct(r.s)} of ${esc(cls)} play">${bar("d4", r.d4)}${bar("t5k", r.t5k)}</div><span class="cnt" title="decks running it in 30%+ of their play">${r.s < 0.005 ? "<1%" : pct(r.s)}<br>${r.k}/${archList.length} decks</span></div>`).join("");
   }).join("");
 }
+function setOpen(panel, open) {
+  clsOpen[panel.dataset.cls] = open;
+  panel.toggleAttribute("data-open", open);
+  panel.querySelector(".cls-open").setAttribute("aria-expanded", String(open));
+}
 document.getElementById("board").addEventListener("click", e => {
+  const opener = e.target.closest(".cls-open");
+  if (opener) { const panel = opener.closest(".cls"); setOpen(panel, !panel.hasAttribute("data-open")); return; }
   const b = e.target.closest(".view-tog button");
   if (!b) return;
   const panel = b.closest(".cls");
   clsView[panel.dataset.cls] = panel.dataset.view = b.dataset.view;
   panel.querySelectorAll(".view-tog button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  setOpen(panel, true);  // picking a view opens a closed class
+});
+document.querySelector(".allbtns").addEventListener("click", e => {
+  const b = e.target.closest("button[data-all]");
+  if (b) document.querySelectorAll("#board .cls").forEach(p => setOpen(p, b.dataset.all === "open"));
 });
 
 /* ---------- CARDS tab ---------- */
