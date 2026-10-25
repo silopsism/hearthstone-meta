@@ -148,8 +148,13 @@ a.deck-chip:hover { filter: brightness(1.12); }
 .deck-title h3 { margin: 0; font: 700 1.15rem/1.2 var(--f-display); letter-spacing: .03em; }
 .deck-title h3::after { content: " ▸"; opacity: .7; font-size: .8em; }
 .deck[open] .deck-title h3::after { content: " ▾"; }
-.deck-title span { font: 400 .8rem/1.2 var(--f-data); font-variant-numeric: tabular-nums; opacity: .85; }
+.deck-title { gap: 6px 10px; }
+.deck-title span { font: 400 .84rem/1.2 var(--f-data); font-variant-numeric: tabular-nums; opacity: .9; }
 .deck-title span b { font-weight: 600; }
+.deck-title .sep { opacity: .55; }
+.deck-title .rc { font-family: var(--f-body); font-weight: 700; letter-spacing: .04em; }
+.deck-sum { display: grid; gap: 10px; padding: 14px 16px 0; font-size: .86rem; color: var(--mute); }
+.deck-sum b { color: var(--ink); font-weight: 600; }
 .deck-cls { font: 700 .66rem/1 var(--f-body) !important; letter-spacing: .12em; text-transform: uppercase; }
 .minis { display: flex; flex-wrap: wrap; gap: 6px; }
 .minis .tile { width: 196px; }
@@ -293,7 +298,8 @@ a.deck-chip:hover { filter: brightness(1.12); }
   </section>
 
   <section class="panel-tab" id="decks" role="tabpanel" aria-labelledby="tb-decks" hidden>
-    <div class="tab-head"><div><h2>Every deck, card by card</h2><p>Each archetype is one deck and its HSGuru lists are variants of it. Rows are cards, columns are lists from highest win rate to lowest; a filled cell means that list runs the card, so solid rows are mandatory and patchy rows are flex slots.</p></div></div>
+    <div class="tab-head"><div><h2>Every deck, card by card</h2><p>Click a deck to open its heat map. Each archetype is one deck and its HSGuru lists are variants of it. Rows are cards, columns are lists from highest win rate to lowest; a filled cell means that list runs the card, so solid rows are mandatory and patchy rows are flex slots. LEG and EPIC count the epics and legendaries you'd have to craft.</p></div>
+      <div class="allbtns" data-scope="heatmaps"><button type="button" data-all="open">Expand all</button><button type="button" data-all="close">Collapse all</button></div></div>
     <div class="chart-panel">
       <h3>What holds up against better players</h3>
       <p>Archetype win rates at Diamond 4-1 and at Top 5k legend. Every deck loses ground at the higher level; aggro Warlock stays on top and C'Thun DH, the most-played deck, drops furthest.</p>
@@ -314,7 +320,7 @@ a.deck-chip:hover { filter: brightness(1.12); }
   <section class="panel-tab" id="classes" role="tabpanel" aria-labelledby="tb-classes" hidden>
     <div class="tab-head">
       <div><h2>Where each card is played</h2><p>Click a class to open it. Each bar is the card's weighted share of that archetype's lists at one level; a hatched bar means the archetype had no qualifying lists at that level. Switch a class to Summary to merge its archetypes and see which cards are mandatory for the class as a whole.</p></div>
-      <div class="allbtns"><button type="button" data-all="open">Expand all</button><button type="button" data-all="close">Collapse all</button></div>
+      <div class="allbtns" data-scope="board"><button type="button" data-all="open">Expand all</button><button type="button" data-all="close">Collapse all</button></div>
       <label class="setpick">Set<select id="pick-classes" data-setpick></select></label>
     </div>
     <div class="legend">
@@ -484,11 +490,20 @@ function renderDecks() {
       const isBE = c.set === "BE" && (c.rarity === "EPIC" || c.rarity === "LEGENDARY");
       return `<tr class="${isBE ? "be" : ""}"><th>${tile(n, { sm: true })}</th><td class="share" style="${heat}">${pct(s)}</td>${cells}</tr>`;
     }).join("");
-    const core = D.coreCrafts.length ? `<div class="minis">${D.coreCrafts.map(n => tile(n, { sm: true })).join("")}</div>` : "";
-    return `<details class="deck" id="${slug("deck", a)}" style="${ccStyle(cls)}"${i < 3 ? " open" : ""}>
-      <summary><div class="deck-title"><h3>${esc(a)}</h3><span class="deck-cls">${esc(cls)}</span>
-        <span><b>${D.wr.toFixed(1)}%</b> avg win rate</span><span><b>${D.lists.length}</b> lists · ${fmt(D.games)} games</span>
-        <span>~<b>${fmt(D.dust)}</b> dust to build</span><span>epics & legendaries to craft: <b>${fmt(D.coreCraftDust)}</b> dust</span></div>${core}</summary>
+    const legs = D.coreCrafts.filter(n => DATA.cards[n].rarity === "LEGENDARY").length, epics = D.coreCrafts.length - legs;
+    const crafts = D.coreCrafts.length
+      ? `<span class="rc">${[legs && `<b>${legs}</b> LEG`, epics && `<b>${epics}</b> EPIC`].filter(Boolean).join(" ")}</span>`
+      : `<span class="rc">nothing to craft</span>`;
+    const core = D.coreCrafts.length
+      ? `<div class="minis">${D.coreCrafts.map(n => tile(n, { sm: true })).join("")}</div>`
+      : `<p class="none">Every core epic and legendary in this deck is free.</p>`;
+    return `<details class="deck" id="${slug("deck", a)}" style="${ccStyle(cls)}">
+      <summary><div class="deck-title"><h3>${esc(a)}</h3>
+        <span><b>${D.wr.toFixed(1)}%</b> win rate</span><span class="sep">·</span><span><b>${fmt(D.games)}</b> games</span><span class="sep">·</span>${crafts}</div></summary>
+      <div class="deck-sum">
+        <p><b>${D.lists.length}</b> list${D.lists.length === 1 ? "" : "s"} · ${esc(cls)} · about <b>${fmt(D.dust)}</b> dust to build · core epics and legendaries to craft: <b>${fmt(D.coreCraftDust)}</b> dust</p>
+        ${core}
+      </div>
       <div class="hm-wrap"><table class="hm"><thead><tr><th></th><th>share</th>${cols}</tr></thead><tbody>${rows}</tbody></table></div>
     </details>`;
   }).join("");
@@ -575,9 +590,12 @@ document.getElementById("board").addEventListener("click", e => {
   panel.querySelectorAll(".view-tog button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
   setOpen(panel, true);  // picking a view opens a closed class
 });
-document.querySelector(".allbtns").addEventListener("click", e => {
-  const b = e.target.closest("button[data-all]");
-  if (b) document.querySelectorAll("#board .cls").forEach(p => setOpen(p, b.dataset.all === "open"));
+document.addEventListener("click", e => {
+  const b = e.target.closest(".allbtns button[data-all]");
+  if (!b) return;
+  const open = b.dataset.all === "open";
+  if (b.parentElement.dataset.scope === "board") document.querySelectorAll("#board .cls").forEach(p => setOpen(p, open));
+  else document.querySelectorAll("#heatmaps details.deck").forEach(d => d.open = open);
 });
 
 /* ---------- CARDS tab ---------- */
