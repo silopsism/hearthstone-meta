@@ -204,6 +204,21 @@ a.deck-chip:hover { filter: brightness(1.12); }
 .tcard p { font-size: .86rem; color: var(--mute); line-height: 1.4; }
 .unplayed { font-size: .86rem; color: var(--faint); }
 
+/* hover preview: the real card on the website, a text card where outside images are blocked */
+.peek { position: fixed; left: 0; top: 0; z-index: 50; pointer-events: none; width: 256px; display: grid; gap: 0; }
+.peek img { display: block; width: 256px; height: auto; filter: drop-shadow(0 10px 22px rgba(0, 0, 0, .7)); }
+.peek .cap { justify-self: center; margin-top: -4px; padding: 5px 10px; border-radius: 4px; background: var(--panel); border: 1px solid var(--rule); font-size: .76rem; color: var(--mute); text-align: center; }
+.peek .cap b { color: var(--ink); font-weight: 700; }
+.pk { width: 256px; background: linear-gradient(180deg, var(--panel-2), var(--panel)); border: 1px solid var(--rar); border-radius: 10px; padding: 14px; display: grid; gap: 8px; box-shadow: 0 0 0 1px #000, 0 12px 28px rgba(0, 0, 0, .65); }
+.pk-top { display: flex; gap: 10px; align-items: center; }
+.pk-top .cost { flex: none; width: 34px; height: 34px; display: grid; place-items: center; font: 700 1.05rem/1 var(--f-data); color: #fff; background: radial-gradient(circle at 35% 30%, #6aa6ff, var(--mana) 60%, #173c80); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+.pk-top h4 { margin: 0; font: 700 1.02rem/1.15 var(--f-display); letter-spacing: .02em; }
+.pk-kind { font-size: .76rem; color: var(--rar); font-weight: 700; letter-spacing: .04em; }
+.pk-text { font-size: .9rem; line-height: 1.4; color: var(--ink); }
+.pk-text:empty { display: none; }
+.pk-stats { font: 600 .9rem/1 var(--f-data); color: var(--ink); }
+.pk-foot { font-size: .74rem; color: var(--mute); border-top: 1px solid var(--rule); padding-top: 7px; }
+
 .method { color: var(--mute); font-size: .9rem; display: grid; gap: 8px; max-width: 82ch; border-top: 1px solid var(--rule); padding-top: 20px; }
 .method strong { color: var(--ink); }
 
@@ -299,6 +314,7 @@ a.deck-chip:hover { filter: brightness(1.12); }
     <p><strong>Free cards</strong> cost no dust and never count as something a deck "needs": the Core set, event cards, reward-track cards and cards granted for opening packs or finishing the starter quests. Cards that are free only in golden still count as crafts. Dust assumes one copy of a legendary (1,600) and two of an epic (2 × 400).</p>
     <p><strong>Limits.</strong> The expansion is days old and these are HSGuru's top-performing lists, not every deck played. Card names were read by eye from screenshots. One Top 5k Void C'Thun DH list was left out because its win rate was cut off.</p>
   </footer>
+  <div class="peek" id="peek" hidden></div>
 </div>
 
 <script>
@@ -350,7 +366,7 @@ function tile(name, opts = {}) {
   const cls = ["tile", rcls, opts.sm ? "sm" : "", opts.dim ? "dim" : "", c.collectible ? "" : "bonus"].filter(Boolean).join(" ");
   const art = DATA.tiles?.[c.id] || `tiles/${c.id}.webp`;
   const rarity = { LEGENDARY: "Legendary", EPIC: "Epic", RARE: "Rare", COMMON: "Common" }[c.rarity] || "Free";
-  return `<div class="${cls}" style="--art:url('${art}');--rar:${rcol}" title="${esc(name)} · ${rarity} · ${esc(c.setName || "")}${c.free ? " · " + esc(c.free) : ""}">` +
+  return `<div class="${cls}" style="--art:url('${art}');--rar:${rcol}" data-card="${esc(name)}" aria-label="${esc(name)}, ${rarity}, ${esc(c.setName || "")}">` +
     `<span class="cost">${c.cost ?? ""}</span><span class="name">${esc(name)}</span>${bd}</div>`;
 }
 
@@ -541,6 +557,66 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
   window.scrollTo({ top: document.querySelector(".tabs").offsetTop - 8 });
 }));
 addEventListener("hashchange", route);
+
+/* ---------- hover preview ---------- */
+(function peekCards() {
+  if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;  // off on touch screens
+  const peek = document.getElementById("peek");
+  const useImages = !DATA.tiles;  // the artifact viewer blocks outside images, so it gets text cards
+  const RARITY_NAME = { LEGENDARY: "Legendary", EPIC: "Epic", RARE: "Rare", COMMON: "Common" };
+  let timer = 0, over = null, x = 0, y = 0;
+
+  const textCard = (name, c) => `<div class="pk" style="--rar:${(RAR[c.rarity] || [, "var(--common)"])[1]}">
+      <div class="pk-top"><span class="cost">${c.cost ?? ""}</span><h4>${esc(name)}</h4></div>
+      <p class="pk-kind">${[RARITY_NAME[c.rarity], c.kind, CLS_NAME[c.cls]].filter(Boolean).map(esc).join(" · ")}</p>
+      <p class="pk-text">${c.text || ""}</p>
+      ${c.stats?.length ? `<p class="pk-stats">${c.stats.join(" / ")}</p>` : ""}
+      <p class="pk-foot">${caption(name, c)}</p></div>`;
+  function caption(name, c) {
+    const b = CRAFT[name];
+    const bits = [esc(c.setName || "")];
+    if (b) bits.push(`<b>${TIER[b.tier][1]}</b>`, b.free ? "free" : `${fmt(b.dust)} dust`);
+    else if (c.free) bits.push("free");
+    if (!c.collectible) bits.push("comes with its Fabled legendary");
+    return bits.join(" · ");
+  }
+  function place() {
+    const w = peek.offsetWidth, h = peek.offsetHeight, m = 10;
+    let left = x + 22;
+    if (left + w > innerWidth - m) left = x - w - 22;
+    const top = Math.min(Math.max(m, y - h / 2), innerHeight - h - m);
+    peek.style.transform = `translate(${Math.max(m, left)}px, ${top}px)`;
+  }
+  function show(el) {
+    const name = el.dataset.card, c = DATA.cards[name];
+    if (!c) return;
+    if (useImages) {
+      peek.innerHTML = `<img alt="" src="https://art.hearthstonejson.com/v1/render/latest/enUS/256x/${encodeURIComponent(c.id)}.png"><p class="cap">${caption(name, c)}</p>`;
+      const img = peek.querySelector("img");
+      img.addEventListener("load", place);
+      img.addEventListener("error", () => { if (over === el) { peek.innerHTML = textCard(name, c); place(); } });
+    } else {
+      peek.innerHTML = textCard(name, c);
+    }
+    peek.hidden = false;
+    place();
+  }
+  function hide() { clearTimeout(timer); peek.hidden = true; }
+
+  document.addEventListener("pointerover", e => {
+    const el = e.target.closest?.(".tile[data-card]");
+    if (!el || el === over) return;
+    over = el; clearTimeout(timer);
+    peek.hidden = true;
+    timer = setTimeout(() => over === el && show(el), 250);
+  });
+  document.addEventListener("pointerout", e => {
+    const el = e.target.closest?.(".tile[data-card]");
+    if (el && !el.contains(e.relatedTarget)) { over = null; hide(); }
+  });
+  document.addEventListener("pointermove", e => { x = e.clientX; y = e.clientY; if (!peek.hidden) place(); }, { passive: true });
+  addEventListener("scroll", () => { over = null; hide(); }, { passive: true });
+})();
 
 renderSlope();
 renderDecks();

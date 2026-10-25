@@ -77,13 +77,30 @@ pool = {c["name"]: c for c in allc
         if c.get("collectible") and c.get("set") in STANDARD and c.get("rarity") in ("EPIC", "LEGENDARY")
         and by_name[c["name"]] is c}
 
+def card_text(c):
+    """Card text as small safe HTML: keep <b>, <i> and line breaks, drop the rest of the markup."""
+    t = (c.get("text") or "").replace("[x]", "").replace("\n", "<br>")
+    t = re.sub(r"[$#](\d+)", r"\1", t)
+    return re.sub(r"<(?!/?(?:b|i|br)\b)[^>]*>", "", t).strip()
+
+
+def card_kind(c):
+    words = [w.title() for w in (c.get("races") or ([c["race"]] if c.get("race") else []))]
+    if c.get("spellSchool"):
+        words.append(c["spellSchool"].title())
+    return " · ".join([(c.get("type") or "").title()] + words)
+
+
 cards = {}
 for n in {n for L in lists for n in L["cards"]} | set(pool):
     c = by_name[n]
+    second = c.get("durability") if c.get("durability") is not None else c.get("health")
+    stats = [x for x in (c.get("attack"), second) if x is not None] if second is not None else []
     cards[n] = {"id": c["id"], "rarity": c.get("rarity") or "FREE", "set": c.get("set"),
                 "badge": SET_BADGE.get(c.get("set"), (c.get("set") or "?")[:4]), "setName": SET_NAME.get(c.get("set"), c.get("set")),
                 "cls": c.get("cardClass"), "cost": c.get("cost"), "collectible": bool(c.get("collectible")),
-                "free": free_reason(c) if c.get("collectible") else None}
+                "free": free_reason(c) if c.get("collectible") else None,
+                "text": card_text(c), "kind": card_kind(c), "stats": stats}
 
 
 def craftable(n):
